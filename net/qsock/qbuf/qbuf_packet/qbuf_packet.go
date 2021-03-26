@@ -3,7 +3,7 @@ package qbuf_packet
 import (
 	"bytes"
 
-	_b "git.querycap.com/aisys/lib/net/qsock/qbuf"
+	_b "git.querycap.com/ss/lib/net/qsock/qbuf"
 )
 
 var _ = bytes.Buffer{}

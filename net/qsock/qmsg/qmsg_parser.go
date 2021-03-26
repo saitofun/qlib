@@ -3,7 +3,7 @@ package qmsg
 import (
 	"errors"
 
-	"git.querycap.com/aisys/lib/net/qsock/qbuf"
+	"git.querycap.com/ss/lib/net/qsock/qbuf"
 )
 
 type Parser interface {

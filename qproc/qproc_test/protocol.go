@@ -4,10 +4,10 @@ import (
 	"errors"
 	"os"
 
-	"git.querycap.com/aisys/lib/encoding/qjson"
-	"git.querycap.com/aisys/lib/qproc"
-	"git.querycap.com/aisys/lib/qsock/qbuf"
-	"git.querycap.com/aisys/lib/qsock/qmsg"
+	"git.querycap.com/ss/lib/encoding/qjson"
+	"git.querycap.com/ss/lib/net/qsock/qbuf"
+	"git.querycap.com/ss/lib/net/qsock/qmsg"
+	"git.querycap.com/ss/lib/qproc"
 	"github.com/google/uuid"
 )
 

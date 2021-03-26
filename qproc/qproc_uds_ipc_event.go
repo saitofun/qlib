@@ -1,6 +1,6 @@
 package qproc
 
-import "git.querycap.com/aisys/lib/qsock"
+import "git.querycap.com/ss/lib/net/qsock"
 
 type IPCEvent struct {
 	node *qsock.Node

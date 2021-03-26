@@ -4,7 +4,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"git.querycap.com/aisys/lib/encoding"
+	"git.querycap.com/ss/lib/encoding"
 )
 
 type String struct {

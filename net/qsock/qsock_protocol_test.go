@@ -7,10 +7,10 @@ import (
 	"os"
 	"time"
 
-	"git.querycap.com/aisys/lib/encoding/qjson"
-	"git.querycap.com/aisys/lib/net/qsock"
-	"git.querycap.com/aisys/lib/net/qsock/qbuf"
-	"git.querycap.com/aisys/lib/net/qsock/qmsg"
+	"git.querycap.com/ss/lib/encoding/qjson"
+	"git.querycap.com/ss/lib/net/qsock"
+	"git.querycap.com/ss/lib/net/qsock/qbuf"
+	"git.querycap.com/ss/lib/net/qsock/qmsg"
 
 	"github.com/google/uuid"
 )

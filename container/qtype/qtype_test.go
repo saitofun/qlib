@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"git.querycap.com/aisys/lib/container/qtype"
+	"git.querycap.com/ss/lib/container/qtype"
 )
 
 func TestNew(t *testing.T) {

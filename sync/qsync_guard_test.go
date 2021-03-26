@@ -3,7 +3,7 @@ package sync_test
 import (
 	"testing"
 
-	"git.querycap.com/aisys/lib/sync"
+	"git.querycap.com/ss/lib/sync"
 )
 
 func TestGuard(t *testing.T) {

@@ -3,7 +3,7 @@ package qproc
 import (
 	"time"
 
-	"git.querycap.com/aisys/lib/qsock/qmsg"
+	"git.querycap.com/ss/lib/net/qsock/qmsg"
 )
 
 type option struct {

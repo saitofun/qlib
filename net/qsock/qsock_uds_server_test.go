@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"git.querycap.com/aisys/lib/net/qsock"
+	"git.querycap.com/ss/lib/net/qsock"
 )
 
 func TestUDSServer(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"git.querycap.com/aisys/lib/qtime"
+	"git.querycap.com/ss/lib/qtime"
 )
 
 func TestTime_UnmarshalJSON(t *testing.T) {

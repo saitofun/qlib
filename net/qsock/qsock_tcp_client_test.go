@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"git.querycap.com/aisys/lib/encoding/qjson"
-	"git.querycap.com/aisys/lib/net/qsock"
-	"git.querycap.com/aisys/lib/net/qsock/qmsg"
+	"git.querycap.com/ss/lib/encoding/qjson"
+	"git.querycap.com/ss/lib/net/qsock"
+	"git.querycap.com/ss/lib/net/qsock/qmsg"
 )
 
 func TestTCPClient(t *testing.T) {

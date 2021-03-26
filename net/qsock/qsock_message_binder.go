@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"git.querycap.com/aisys/lib/net/qsock/qmsg"
+	"git.querycap.com/ss/lib/net/qsock/qmsg"
 )
 
 type Binder struct {

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"git.querycap.com/aisys/lib/net/qsock"
+	"git.querycap.com/ss/lib/net/qsock"
 )
 
 func TestUDPServer(t *testing.T) {

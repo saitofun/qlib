@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"git.querycap.com/aisys/lib/qproc"
-	"git.querycap.com/aisys/lib/qproc/qproc_test"
+	"git.querycap.com/ss/lib/qproc"
+	"git.querycap.com/ss/lib/qproc/qproc_test"
 )
 
 func main() {

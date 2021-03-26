@@ -8,7 +8,7 @@ import (
 	"strings"
 	"syscall"
 
-	"git.querycap.com/aisys/lib/encoding"
+	"git.querycap.com/ss/lib/encoding"
 )
 
 type Cmd struct {

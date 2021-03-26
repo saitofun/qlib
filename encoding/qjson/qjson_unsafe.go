@@ -1,7 +1,7 @@
 package qjson
 
 import (
-	"git.querycap.com/aisys/lib/encoding"
+	"git.querycap.com/ss/lib/encoding"
 )
 
 // CAUTION: the following functions ignore json marshal error

@@ -3,7 +3,7 @@ package sync
 import (
 	"sync"
 	
-	"git.querycap.com/aisys/lib/container/qtype"
+	"git.querycap.com/ss/lib/container/qtype"
 )
 
 type Mutex struct {

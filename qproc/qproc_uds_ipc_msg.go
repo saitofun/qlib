@@ -1,7 +1,7 @@
 package qproc
 
 import (
-	"git.querycap.com/aisys/lib/qsock/qmsg"
+	"git.querycap.com/ss/lib/net/qsock/qmsg"
 )
 
 type IPCMessage interface {
@@ -9,4 +9,3 @@ type IPCMessage interface {
 	DstPid() int
 	qmsg.Message
 }
-

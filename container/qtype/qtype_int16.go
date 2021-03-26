@@ -3,7 +3,7 @@ package qtype
 import (
 	"sync/atomic"
 
-	"git.querycap.com/aisys/lib/encoding/qjson"
+	"git.querycap.com/ss/lib/encoding/qjson"
 )
 
 type Int16 struct {

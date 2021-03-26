@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"sync/atomic"
 
-	"git.querycap.com/aisys/lib/encoding/qjson"
+	"git.querycap.com/ss/lib/encoding/qjson"
 )
 
 type Bool struct {

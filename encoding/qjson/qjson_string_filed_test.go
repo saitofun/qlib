@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"git.querycap.com/aisys/lib/encoding/qjson"
-	"git.querycap.com/aisys/lib/qtime"
+	"git.querycap.com/ss/lib/encoding/qjson"
+	"git.querycap.com/ss/lib/qtime"
 )
 
 type Struct struct {

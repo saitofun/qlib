@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"git.querycap.com/aisys/lib/qproc"
-	"git.querycap.com/aisys/lib/qproc/qproc_test"
+	"git.querycap.com/ss/lib/qproc"
+	"git.querycap.com/ss/lib/qproc/qproc_test"
 	"github.com/google/uuid"
 )
 

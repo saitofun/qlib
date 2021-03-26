@@ -1,7 +1,7 @@
 package qsock
 
 import (
-	"git.querycap.com/aisys/lib/net/qsock/qmsg"
+	"git.querycap.com/ss/lib/net/qsock/qmsg"
 )
 
 type Event struct {
