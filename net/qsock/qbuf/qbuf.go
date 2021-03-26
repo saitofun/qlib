@@ -3,6 +3,8 @@ package qbuf
 import "errors"
 
 type Buffer interface {
+	Len() int
+	Cap() int
 	Read([]byte) (int, error)
 	Write([]byte) (int, error)
 	ResetAndWrite([]byte) error

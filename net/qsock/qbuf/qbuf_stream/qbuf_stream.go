@@ -2,7 +2,7 @@ package qbuf_stream
 
 import (
 	"sync"
-	
+
 	_b "git.querycap.com/ss/lib/net/qsock/qbuf"
 )
 
@@ -52,9 +52,9 @@ func (s *buffer) read(n int) ([]byte, error) {
 	if s.rs < n {
 		return nil, _b.EStreamBufferDataLack
 	}
-	
+
 	var ret = make([]byte, n)
-	
+
 	if s.r > s.w {
 		if s.size-s.r >= n {
 			copy(ret, s.buf[s.r:s.r+n])
@@ -70,12 +70,24 @@ func (s *buffer) read(n int) ([]byte, error) {
 	return ret, nil
 }
 
+func (s *buffer) Len() int {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.rs
+}
+
+func (s *buffer) Cap() int {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.size
+}
+
 func (s *buffer) Read(out []byte) (int, error) {
 	n := len(out)
 	if n == 0 {
 		return 0, nil
 	}
-	
+
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	ret, err := s.read(n)
@@ -90,13 +102,13 @@ func (s *buffer) Read(out []byte) (int, error) {
 func (s *buffer) Write(in []byte) (int, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	n := len(in)
-	
+
 	for s.ws < n {
 		s.resize()
 	}
-	
+
 	defer s.afterW(n)
 	if s.r > s.w {
 		copy(s.buf[s.w:s.w+n], in)
@@ -126,11 +138,11 @@ func (s *buffer) WriteByte(v byte) error {
 func (s *buffer) Probe(n int) ([]byte, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	if n > s.rs {
 		return nil, _b.EStreamBufferDataLack
 	}
-	
+
 	return s.read(n)
 }
 
@@ -149,13 +161,13 @@ func (s *buffer) Bytes() []byte {
 func (s *buffer) Reset() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	
+
 	s.r, s.w, s.rs, s.ws = 0, 0, 0, s.size
 }
 
 func (s *buffer) resize() {
 	buf := make([]byte, s.size<<1)
-	
+
 	ori, _ := s.read(s.rs)
 	copy(buf[0:], ori[0:])
 	s.buf = buf
