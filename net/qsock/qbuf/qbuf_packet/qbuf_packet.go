@@ -19,7 +19,9 @@ func New(cap int) *buffer {
 	if cap != 0 {
 		size = cap
 	}
-	return &buffer{bytes.NewBuffer(make([]byte, size))}
+	ret := &buffer{bytes.NewBuffer(make([]byte, size))}
+	ret.Reset()
+	return ret
 }
 
 func (b *buffer) Read(out []byte) (int, error) {
