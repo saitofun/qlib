@@ -18,3 +18,4 @@ type TestModel struct {
 	Field1 string `db:"index"`
 	Field2 string `db:"unique_index"`
 }
+

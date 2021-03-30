@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -40,12 +41,15 @@ type Time struct {
 var (
 	_ sql.Scanner   = (*Time)(nil)
 	_ driver.Valuer = (*Time)(nil)
-	_ interface {
-	}
 )
 
 func (t *Time) DataType(engine string) string {
-	return "bigint"
+	switch strings.ToLower(engine) {
+	case "sqlite", "sqlite3":
+		return "integer"
+	default:
+		return "bigint"
+	}
 }
 
 func (t *Time) Scan(value interface{}) error {
