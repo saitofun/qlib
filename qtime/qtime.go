@@ -124,6 +124,11 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 	return err
 }
 
+func (t *Time) IsZero() bool {
+	unix := t.Unix()
+	return unix == 0 || unix == UnixZero.Unix()
+}
+
 func Now() Time {
 	return Time{time.Now()}
 }
