@@ -11,11 +11,10 @@ import (
 )
 
 var (
-	zone = time.Local
-	zero = time.Time{}
-
-	UTC = time.UTC
-	CST = time.FixedZone("CST", 60*60*8)
+	UTC      = time.UTC
+	CST      = time.FixedZone("CST", 60*60*8)
+	Zero     = Time{time.Time{}}
+	UnixZero = Time{time.Unix(0, 0)}
 )
 
 const (
@@ -63,12 +62,12 @@ func (t *Time) Scan(value interface{}) error {
 		t.Time = time.Unix(n, 0)
 	case int64:
 		if v < 0 {
-			t.Time = zero
+			t.Time = Zero.Time
 		} else {
 			t.Time = time.Unix(v, 0)
 		}
 	case nil:
-		t.Time = zero
+		t.Time = Zero.Time
 	default:
 		return fmt.Errorf("cannot sql.Scan() strfmt.Time from: %#v", v)
 	}
