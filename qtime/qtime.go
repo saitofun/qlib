@@ -113,7 +113,7 @@ func (t Time) MarshalJSON() ([]byte, error) {
 
 func (t *Time) UnmarshalJSON(data []byte) error {
 	// Ignore null, like in the main JSON package.
-	if string(data) == "null" || string(data) == "" {
+	if string(data) == "null" || string(data) == `""` {
 		*t = Zero
 		return nil
 	}
@@ -142,6 +142,9 @@ func (t Time) MarshalText() ([]byte, error) {
 }
 
 func (t *Time) IsZero() bool {
+	if t.Time.IsZero() {
+		return true
+	}
 	unix := t.Unix()
 	return unix == 0 || unix == UnixZero.Unix()
 }
