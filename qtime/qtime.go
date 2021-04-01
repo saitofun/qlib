@@ -124,6 +124,19 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 	return err
 }
 
+func (t *Time) UnmarshalText(data []byte) (err error) {
+	str := string(data)
+	if len(str) == 0 || str == "0" {
+		return nil
+	}
+	*t, err = Parse(str)
+	return
+}
+
+func (t Time) MarshalText() ([]byte, error) {
+	return []byte(t.String()), nil
+}
+
 func (t *Time) IsZero() bool {
 	unix := t.Unix()
 	return unix == 0 || unix == UnixZero.Unix()
@@ -147,4 +160,17 @@ func NowMicroSecond() int64 {
 
 func NowNanoSecond() int64 {
 	return Now().UnixNano()
+}
+
+func Parse(s string) (t Time, e error) {
+	t.Time, e = time.Parse(Format, s)
+	return
+}
+
+func ParseWithLayout(val, layout string) (t Time, e error) {
+	t.Time, e = time.ParseInLocation(layout, val, CST)
+	if e != nil {
+		t = UnixZero
+	}
+	return
 }
