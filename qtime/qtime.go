@@ -97,6 +97,9 @@ func (t Time) LogFormat() string {
 }
 
 func (t Time) MarshalJSON() ([]byte, error) {
+	if t.IsZero() {
+		return []byte(""), nil
+	}
 	if y := t.Year(); y < 0 || y >= 10000 {
 		return nil, errors.New("Time.MarshalJSON: year outside of range")
 	}
