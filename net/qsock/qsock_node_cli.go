@@ -112,3 +112,16 @@ func (c *Client) StopReason() string {
 func (c *Client) Endpoint() *Node { return c.node }
 
 func (c *Client) RemoteAddr() string { return c.node.c.RemoteAddr().String() }
+
+func (c *Client) BufferState() interface{} {
+	ret := map[string]int{}
+	rs, ws, capacity := c.node.rb.State()
+	ret["rb_rs"] = rs
+	ret["rb_ws"] = ws
+	ret["rb_cap"] = capacity
+	rs, ws, capacity = c.node.wb.State()
+	ret["wb_rs"] = rs
+	ret["wb_ws"] = ws
+	ret["wb_cap"] = capacity
+	return ret
+}
