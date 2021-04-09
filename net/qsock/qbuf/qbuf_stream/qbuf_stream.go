@@ -174,12 +174,3 @@ func (s *buffer) resize() {
 	s.size <<= 1
 	s.r, s.w, s.rs, s.ws = 0, len(ori), len(ori), s.size-len(ori)
 }
-
-func (s *buffer) State() (int, int, int) {
-	if s == nil {
-		return 0, 0, 0
-	}
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return s.rs, s.ws, s.size
-}

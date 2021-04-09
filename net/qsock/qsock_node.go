@@ -305,18 +305,22 @@ func (n *Node) write(dat []byte) (size int, err error) {
 	return
 }
 
-// for trace only
-func (n *Node) RQueueLen() int {
-	if n == nil {
-		return 0
-	}
-	return len(n.rq)
+type NodeStat struct {
+	RBufLen int `json:"rb_len"`
+	RBufCap int `json:"rb_cap"`
+	WBufLen int `json:"wb_len"`
+	WBufCap int `json:"wb_cap"`
+	RQLen   int `json:"rq_len"`
+	SQLen   int `json:"sq_len"`
 }
-func (n *Node) SQueueLen() int {
-	if n == nil {
-		return 0
+
+func (n *Node) State() NodeStat {
+	return NodeStat{
+		n.rb.Len(),
+		n.rb.Cap(),
+		n.wb.Len(),
+		n.wb.Cap(),
+		len(n.rq),
+		len(n.sq),
 	}
-	return len(n.sq)
 }
-func (n *Node) RBuffer() qbuf.Buffer { return n.rb }
-func (n *Node) WBuffer() qbuf.Buffer { return n.wb }

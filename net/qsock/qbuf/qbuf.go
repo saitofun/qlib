@@ -12,7 +12,6 @@ type Buffer interface {
 	Shift(int) error
 	Bytes() []byte
 	Reset()
-	State() (int, int, int) // read size/write size/capacity
 }
 
 var EStreamBufferDataLack = errors.New("stream buffer date lack")

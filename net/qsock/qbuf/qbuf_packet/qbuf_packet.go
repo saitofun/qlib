@@ -65,10 +65,3 @@ func (b *buffer) Bytes() []byte {
 func (b *buffer) Reset() {
 	b.Buffer.Reset()
 }
-
-func (b *buffer) State() (int, int, int) {
-	if b == nil {
-		return 0, 0, 0
-	}
-	return b.Buffer.Len(), b.Buffer.Cap() - b.Buffer.Len(), b.Buffer.Cap()
-}
