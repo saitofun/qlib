@@ -1,2 +1,7 @@
 - net/http
--
+- conv: any 2 int
+- conv: any 2 number
+- conv: any 2 string
+- conv: any 2 bool
+- conv: any 2 bytes
+- conv: value

@@ -14,8 +14,8 @@ func NewWith(mu *sync.Mutex) *Guard {
 	return &Guard{mu: mu}
 }
 
-func (gl *Guard) Do(f func()) {
-	gl.mu.Lock()
-	defer gl.mu.Unlock()
+func (g *Guard) Do(f func()) {
+	g.mu.Lock()
+	defer g.mu.Unlock()
 	f()
 }
