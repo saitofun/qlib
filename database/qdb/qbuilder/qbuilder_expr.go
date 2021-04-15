@@ -55,7 +55,11 @@ var (
 
 type expr struct {
 	*bytes.Buffer
-	Args []interface{}
+	args []interface{}
+}
+
+func InstanceExpr(query string, args ...interface{}) *expr {
+	return &expr{Buffer: bytes.NewBufferString(query), args: args}
 }
 
 func (e *expr) WriteExprs(raw ...[]byte) *expr {
@@ -122,12 +126,12 @@ func (e *expr) Select(v Model, additions ...Addition) *expr {
 
 func (e *expr) Exec(db *sql.DB) (sql.Result, error) {
 	defer e.Release()
-	return db.Exec(e.String(), e.Args...)
+	return db.Exec(e.String(), e.args...)
 }
 
 func (e *expr) QueryAndScan(db *sql.DB, v interface{}) error {
 	defer e.Release()
-	rows, err := db.Query(e.String(), e.Args...)
+	rows, err := db.Query(e.String(), e.args...)
 	if err != nil {
 		return err
 	}
