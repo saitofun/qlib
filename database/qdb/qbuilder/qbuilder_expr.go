@@ -8,35 +8,46 @@ import (
 )
 
 var (
-	ExprSELECT     = []byte("SELECT")
-	ExprUPDATE     = []byte("UPDATE")
-	ExprDELETE     = []byte("DELETE FROM")
-	ExprINSERT     = []byte("INSERT INTO")
-	ExprVALUES     = []byte("VALUES")
-	ExprSET        = []byte("SET")
-	ExprFROM       = []byte("FROM")
-	ExprWHERE      = []byte("WHERE")
-	ExprGROUPBY    = []byte("GROUP BY")
-	ExprORDERBY    = []byte("ORDER BY")
-	ExprHAVING     = []byte("HAVING")
-	ExprLIKE       = []byte("LIKE")
-	ExprBETWEEN    = []byte("BETWEEN")
-	ExprNOTBETWEEN = []byte("NOT BETWEEN")
-	ExprDISDINCT   = []byte("DISTINCT")
-	ExprLIMIT      = []byte("LIMIT")
-	ExprOFFSET     = []byte("OFFSET")
-	ExprAS         = []byte("AS")
-	ExprDESC       = []byte("DESC")
+	// DMLs
+	ExprSELECT   = []byte("SELECT")
+	ExprUPDATE   = []byte("UPDATE")
+	ExprDELETE   = []byte("DELETE FROM")
+	ExprINSERT   = []byte("INSERT INTO")
+	ExprVALUES   = []byte("VALUES")
+	ExprSET      = []byte("SET")
+	ExprFROM     = []byte("FROM")
+	ExprWHERE    = []byte("WHERE")
+	ExprGROUPBY  = []byte("GROUP BY")
+	ExprORDERBY  = []byte("ORDER BY")
+	ExprDESC     = []byte("DESC")
+	ExprHAVING   = []byte("HAVING")
+	ExprDISDINCT = []byte("DISTINCT")
+	ExprLIMIT    = []byte("LIMIT")
+	ExprOFFSET   = []byte("OFFSET")
+
+	// alias
+	ExprAS = []byte("AS")
+
+	// condition operators
 	ExprIN         = []byte("IN")
 	ExprAND        = []byte("AND")
 	ExprOR         = []byte("OR")
+	ExprXOR        = []byte("XOR")
 	ExprIS         = []byte("IS")
-	ExprJOIN       = []byte("JOIN")
-	ExprINNERJOIN  = []byte("INNER JOIN")
-	ExprLEFTJOIN   = []byte("LEFT JOIN")
-	ExprRIGHTJOIN  = []byte("RIGHT JOIN")
-	ExprUNIONJOIN  = []byte("UNION JOIN")
+	ExprISNOTNULL  = []byte("IS NOT NULL")
+	ExprISNULL     = []byte("IS NULL")
+	ExprLIKE       = []byte("LIKE")
+	ExprBETWEEN    = []byte("BETWEEN")
+	ExprNOTBETWEEN = []byte("NOT BETWEEN")
 
+	// join query
+	ExprJOIN      = []byte("JOIN")
+	ExprINNERJOIN = []byte("INNER JOIN")
+	ExprLEFTJOIN  = []byte("LEFT JOIN")
+	ExprRIGHTJOIN = []byte("RIGHT JOIN")
+	ExprUNIONJOIN = []byte("UNION JOIN")
+
+	// glues
 	ExprGlueSpace = []byte(" ")
 	ExprGlueComma = []byte(",")
 	ExprGlueEq    = []byte("=")
@@ -45,8 +56,11 @@ var (
 	ExprGlueLte   = []byte("<=")
 	ExprGlueGte   = []byte("<=")
 
-	ExprBracketL       = []byte("(")
-	ExprBracketR       = []byte(")")
+	// quotes
+	ExprBracketL = []byte("(")
+	ExprBracketR = []byte(")")
+
+	// end and breaks
 	ExprEnd            = []byte(";")
 	ExprEndWithNewLine = []byte(";\n")
 	ExprNewLine        = []byte("\n")

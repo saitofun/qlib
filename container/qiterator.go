@@ -1,5 +1,4 @@
 package container
 
-type Iter interface {
-
+type Iterator interface {
 }
