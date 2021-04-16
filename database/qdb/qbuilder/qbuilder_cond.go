@@ -1,11 +1,7 @@
 package qbuilder
 
-type Cond interface {
-	Expr() []byte
-	Args() []interface{}
-}
-
 var (
+	ExprCondIs         = []byte("? IS ?")
 	ExprCondEq         = []byte("? = ?")
 	ExprCondLt         = []byte("? < ?")
 	ExprCondLte        = []byte("? <= ?")
@@ -20,6 +16,16 @@ var (
 
 type CondCmp struct {
 	args [2]interface{}
+}
+
+type CondIs CondCmp
+
+func (*CondIs) Expr() []byte {
+	return ExprCondEq
+}
+
+func (c *CondIs) Args() []interface{} {
+	return c.args[0:2]
 }
 
 type CondEq CondCmp
@@ -130,3 +136,4 @@ func (*CondRightLike) Expr() []byte {
 func (c *CondRightLike) Args() []interface{} {
 	return []interface{}{c.src, c.tar}
 }
+

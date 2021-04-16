@@ -1,5 +1,9 @@
 package encoding
 
+import (
+	"encoding/json"
+)
+
 type Int interface {
 	Int() int64
 }
@@ -27,3 +31,5 @@ type Bytes interface {
 type Value interface {
 	Value() interface{}
 }
+
+type JsonMarshaler = json.Marshaler

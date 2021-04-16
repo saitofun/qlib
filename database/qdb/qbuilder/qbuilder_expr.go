@@ -67,12 +67,21 @@ var (
 	ExprNewLinePrefix  = []byte("\n  ")
 )
 
+type Expr interface {
+	Expr() []byte
+	Args() []interface{}
+}
+
 type expr struct {
 	*bytes.Buffer
 	args []interface{}
 }
 
+func (e *expr) Expr() []byte        { return e.Bytes() }
+func (e *expr) Args() []interface{} { return e.args }
+
 func InstanceExpr(query string, args ...interface{}) *expr {
+	// @todo pool get
 	return &expr{Buffer: bytes.NewBufferString(query), args: args}
 }
 
