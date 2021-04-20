@@ -8,17 +8,17 @@ import (
 )
 
 type Bool struct {
-	*int32
+	int32
 }
 
 var (
-	vs = map[bool]int32{true: 1, false: 0}
-	f  = []byte("false")
-	t  = []byte("true")
+	fJSON  = []byte("false")
+	tJSON  = []byte("true")
+	tInt32 = int32(1)
 )
 
 func NewBool() *Bool {
-	return &Bool{int32: new(int32)}
+	return &Bool{}
 }
 
 func NewBoolWithVal(v bool) *Bool {
@@ -32,19 +32,27 @@ func (b *Bool) Clone() *Bool {
 }
 
 func (b *Bool) Val() bool {
-	return atomic.LoadInt32(b.int32) == 1
+	return atomic.LoadInt32(&b.int32) == 1
 }
 
 func (b *Bool) CAS(pv, nv bool) (swapped bool) {
-	return atomic.CompareAndSwapInt32(b.int32, vs[pv], vs[nv])
+	var old, new int32
+	if pv {
+		old = tInt32
+	}
+	if nv {
+		new = tInt32
+	}
+	return atomic.CompareAndSwapInt32(&b.int32, old, new)
 }
 
-func (b *Bool) Set(v bool) {
-	atomic.StoreInt32(b.int32, vs[v])
-}
-
-func (b *Bool) GetSet(v bool) bool {
-	return atomic.SwapInt32(b.int32, vs[v]) == 1
+func (b *Bool) Set(v bool) (old bool) {
+	if v {
+		old = atomic.SwapInt32(&b.int32, 1) == 1
+	} else {
+		old = atomic.SwapInt32(&b.int32, 0) == 1
+	}
+	return
 }
 
 func (b *Bool) Type() reflect.Type {
@@ -53,9 +61,9 @@ func (b *Bool) Type() reflect.Type {
 
 func (b *Bool) MarshalJSON() ([]byte, error) {
 	if b.Val() {
-		return t, nil
+		return tJSON, nil
 	}
-	return f, nil
+	return fJSON, nil
 }
 
 func (b *Bool) UnmarshalJSON(v []byte) error {

@@ -2,39 +2,55 @@ package qtype
 
 import (
 	"math"
-	"reflect"
+	"strconv"
 	"sync/atomic"
 
 	"git.querycap.com/ss/lib/encoding/qjson"
 )
 
 type Float64 struct {
-	*uint64
+	uint64
 }
 
 func NewFloat64() *Float64 {
-	return &Float64{uint64: new(uint64)}
+	return &Float64{0}
 }
 
-func (f *Float64) Type() reflect.Type {
-	return reflect.TypeOf(float64(0))
+func NewFloat64WithVal(v float64) *Float64 {
+	return &Float64{math.Float64bits(v)}
+}
+
+func (f *Float64) Clone() *Float64 {
+	return NewFloat64WithVal(f.Val())
 }
 
 func (f *Float64) Val() float64 {
-	return math.Float64frombits(atomic.LoadUint64(f.uint64))
+	return math.Float64frombits(atomic.LoadUint64(&f.uint64))
 }
 
 func (f *Float64) CAS(pv, nv float64) (swapped bool) {
 	return atomic.CompareAndSwapUint64(
-		f.uint64, math.Float64bits(pv), math.Float64bits(nv))
+		&f.uint64, math.Float64bits(pv), math.Float64bits(nv))
 }
 
-func (f *Float64) Set(v float64) {
-	atomic.StoreUint64(f.uint64, math.Float64bits(v))
+func (f *Float64) Set(v float64) float64 {
+	return math.Float64frombits(atomic.SwapUint64(&f.uint64, math.Float64bits(v)))
 }
 
-func (f *Float64) GetSet(v float64) float64 {
-	return math.Float64frombits(atomic.SwapUint64(f.uint64, math.Float64bits(v)))
+func (f *Float64) Add(delta float64) float64 {
+	var new float64
+	for {
+		old := math.Float64frombits(f.uint64)
+		new = old + delta
+		if atomic.CompareAndSwapUint64(&f.uint64, math.Float64bits(old), math.Float64bits(new)) {
+			break
+		}
+	}
+	return new
+}
+
+func (f *Float64) String() string {
+	return strconv.FormatFloat(f.Val(), 'f', -1, 64)
 }
 
 func (f *Float64) MarshalJSON() ([]byte, error) {

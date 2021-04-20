@@ -2,9 +2,6 @@ package qbuilder
 
 import (
 	"bytes"
-	"database/sql"
-
-	"github.com/go-courier/sqlx/v2"
 )
 
 var (
@@ -67,9 +64,64 @@ var (
 	ExprNewLinePrefix  = []byte("\n  ")
 )
 
-type Expr interface {
+// Condition Expressions
+var (
+	ExprCondIs          = []byte("? IS ?")
+	ExprCondIsClause    = []byte("? IS ")
+	ExprCondEq          = []byte("? = ?")
+	ExprCondEqClause    = []byte("? = ")
+	ExprCondNotEq       = []byte("? <> ?")
+	ExprCondNotEqClause = []byte("? <> ")
+	ExprCondLt          = []byte("? < ?")
+	ExprCondLtClause    = []byte("? < ")
+	ExprCondLte         = []byte("? <= ?")
+	ExprCondLteClause   = []byte("? <= ")
+	ExprCondGt          = []byte("? > ?")
+	ExprCondGtClause    = []byte("? > ")
+	ExprCondGte         = []byte("? >= ?")
+	ExprCondGteClause   = []byte("? >= ")
+	ExprCondBetween     = []byte("? BETWEEN ? and ?")
+	ExprCondNotBetween  = []byte("? NOT BETWEEN ? and ?")
+	ExprCondLike        = []byte("? LIKE '%?%'")
+	ExprCondLeftLike    = []byte("? LIKE '?%'")
+	ExprCondRightLike   = []byte("? LIKE '%?'")
+)
+
+const (
+	CondIS = iota + 1
+	CondEQ
+	CondNOTEQ
+	CondLT
+	CondLTE
+	CondGT
+	CondGTE
+	CondBETWEEN
+	CondNOTBETWEEN
+	CondLIKE
+	CondLEFTLIKE
+	CondRIGHTLIKE
+)
+
+type Ex interface {
 	Expr() []byte
 	Args() []interface{}
+}
+
+type raw struct {
+	expr []byte
+	args []interface{}
+}
+
+func NewRawEx(ex []byte, args ...interface{}) *raw {
+	return &raw{ex, args}
+}
+
+func (r *raw) Expr() []byte {
+	return r.expr
+}
+
+func (r *raw) Args() []interface{} {
+	return r.args
 }
 
 type expr struct {
@@ -80,85 +132,9 @@ type expr struct {
 func (e *expr) Expr() []byte        { return e.Bytes() }
 func (e *expr) Args() []interface{} { return e.args }
 
-func InstanceExpr(query string, args ...interface{}) *expr {
-	// @todo pool get
-	return &expr{Buffer: bytes.NewBufferString(query), args: args}
-}
-
-func (e *expr) WriteExprs(raw ...[]byte) *expr {
-	for i := range raw {
-		e.Write(raw[i])
-		e.Write(ExprGlueSpace)
+func Clause(e Ex) Ex {
+	return &raw{
+		append(append(append([]byte{}, '('), e.Expr()...), ')'),
+		e.Args(),
 	}
-	e.Write(ExprGlueSpace)
-	return e
 }
-
-func (e *expr) Begin(ex []byte) *expr {
-	e.Buffer.Reset()
-	e.Write(ex)
-	e.Write(ExprGlueSpace)
-	return e
-}
-
-func (e *expr) WriteExpr(ex []byte) *expr {
-	e.Write(ex)
-	e.Write(ExprGlueSpace)
-	return e
-}
-
-func (e *expr) WriteExprAndContinue(ex []byte) *expr {
-	return e.WriteExpr(ex).WriteNewLinePrefix()
-}
-
-func (e *expr) End() *expr {
-	e.Write(ExprEndWithNewLine)
-	e.WriteByte('\n')
-	return e
-}
-
-func (e *expr) WriteNewLine() *expr {
-	e.WriteByte('\n')
-	return e
-}
-
-func (e *expr) WriteNewLinePrefix() *expr {
-	e.WriteByte('\n')
-	e.Write(ExprGlueSpace)
-	return e
-}
-
-func (e *expr) WriteRaw(ex []byte) *expr {
-	e.Write(ex)
-	return e.End()
-}
-
-func (e *expr) WriteAdditions(additions ...Addition) *expr { return e }
-
-func (e *expr) Select(v Model, additions ...Addition) *expr {
-	e.Begin(ExprSELECT).WriteNewLinePrefix().
-		WriteExprAndContinue(v.FieldsExpr()).
-		WriteExprAndContinue(ExprFROM).
-		WriteExprAndContinue(v.TableName())
-	if len(additions) > 0 {
-		e.WriteExprAndContinue(ExprWHERE).
-			WriteAdditions(additions...).End()
-	}
-	return e
-}
-
-func (e *expr) Exec(db *sql.DB) (sql.Result, error) {
-	defer e.Release()
-	return db.Exec(e.String(), e.args...)
-}
-
-func (e *expr) QueryAndScan(db *sql.DB, v interface{}) error {
-	defer e.Release()
-	rows, err := db.Query(e.String(), e.args...)
-	if err != nil {
-		return err
-	}
-	return sqlx.Scan(rows, v)
-}
-
-func (e *expr) Release() {}

@@ -1,6 +1,7 @@
 package qtype
 
 import (
+	"strconv"
 	"sync/atomic"
 
 	"git.querycap.com/ss/lib/encoding/qjson"
@@ -11,10 +12,18 @@ type UInt struct {
 }
 
 func NewUInt() *UInt {
-	return &UInt{uint64: 0}
+	return &UInt{0}
 }
 
-func (i UInt) Val() uint {
+func NewUIntWithVal(v uint) *UInt {
+	return &UInt{uint64(v)}
+}
+
+func (i *UInt) Clone() *UInt {
+	return NewUIntWithVal(i.Val())
+}
+
+func (i *UInt) Val() uint {
 	return uint(atomic.LoadUint64(&i.uint64))
 }
 
@@ -22,12 +31,16 @@ func (i *UInt) CAS(pv, nv uint) bool {
 	return atomic.CompareAndSwapUint64(&i.uint64, uint64(pv), uint64(nv))
 }
 
-func (i *UInt) Set(v uint) {
-	atomic.StoreUint64(&i.uint64, uint64(v))
+func (i *UInt) Set(v uint) uint {
+	return uint(atomic.SwapUint64(&i.uint64, uint64(v)))
 }
 
-func (i *UInt) GetSet(v uint) uint {
-	return uint(atomic.SwapUint64(&i.uint64, uint64(v)))
+func (i *UInt) Add(delta uint) uint {
+	return uint(atomic.AddUint64(&i.uint64, uint64(delta)))
+}
+
+func (i *UInt) String() string {
+	return strconv.FormatUint(uint64(i.Val()), 10)
 }
 
 func (i UInt) MarshalJSON() ([]byte, error) {

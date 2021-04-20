@@ -1,47 +1,42 @@
 package qtype
 
 import (
-	"sync"
 	"sync/atomic"
 
+	"git.querycap.com/ss/lib/encoding/qconv"
 	"git.querycap.com/ss/lib/encoding/qjson"
 )
 
 type Any struct {
-	mu  *sync.Mutex
-	val atomic.Value
+	v atomic.Value
 }
 
-func NewAny() *Any {
-	return &Any{
-		mu: &sync.Mutex{},
-	}
+func New() *Any {
+	return &Any{}
 }
 
-func (i *Any) Val() interface{} {
-	return i.val.Load()
-}
-
-func (i *Any) Set(v interface{}) {
-	i.val.Store(v)
-}
-
-func (i *Any) GetSet(v interface{}) interface{} {
-	i.mu.Lock()
-	defer i.mu.Unlock()
-	ret := i.Val()
-	i.Set(v)
+func NewWithVal(v interface{}) *Any {
+	ret := &Any{}
+	ret.v.Store(v)
 	return ret
 }
 
-func (i *Any) CAS(pv, nv interface{}) (swapped bool) {
-	i.mu.Lock()
-	defer i.mu.Unlock()
-	if pv == i.Val() {
-		i.Set(nv)
-		return true
-	}
-	return false
+func (i *Any) Clone() *Any {
+	return NewWithVal(i.Val())
+}
+
+func (i *Any) Val() interface{} {
+	return i.v.Load()
+}
+
+func (i *Any) Set(v interface{}) interface{} {
+	ret := i.v.Load()
+	i.v.Store(v)
+	return ret
+}
+
+func (i *Any) String() string {
+	return qconv.String(i.Val())
 }
 
 func (i Any) MarshalJSON() ([]byte, error) {

@@ -1,52 +1,37 @@
 package qtype
 
 import (
-	"sync"
 	"sync/atomic"
 
 	"git.querycap.com/ss/lib/encoding"
 )
 
 type String struct {
-	mu  *sync.Mutex
-	str atomic.Value
+	s atomic.Value
 }
 
 func NewString() *String {
-	return &String{
-		mu: &sync.Mutex{},
-	}
+	return NewStringWithVal("")
+}
+
+func NewStringWithVal(v string) *String {
+	ret := &String{atomic.Value{}}
+	ret.s.Store(v)
+	return ret
+}
+
+func (s *String) Clone() *String {
+	return NewStringWithVal(s.Val())
 }
 
 func (s *String) Val() string {
-	str := s.str.Load()
-	if str == nil {
-		return ""
-	}
-	return str.(string)
+	return s.s.Load().(string)
 }
 
-func (s *String) CAS(pv, nv string) (swapped bool) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	str := s.Val()
-	if str == pv {
-		s.str.Store(nv)
-		return true
-	}
-	return false
-}
-
-func (s *String) GetSet(v string) string {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	str := s.Val()
-	s.Set(v)
-	return str
-}
-
-func (s *String) Set(v string) {
-	s.str.Store(v)
+func (s *String) Set(v string) string {
+	ret := s.Val()
+	s.s.Store(v)
+	return ret
 }
 
 func (s *String) String() string {
