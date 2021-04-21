@@ -1,122 +1,71 @@
 package qbuilder
 
 import (
-	"bytes"
+	"git.querycap.com/ss/lib/container/qtype"
 )
 
 var (
 	// DMLs
-	ExprSELECT   = []byte("SELECT")
-	ExprUPDATE   = []byte("UPDATE")
-	ExprDELETE   = []byte("DELETE FROM")
-	ExprINSERT   = []byte("INSERT INTO")
-	ExprVALUES   = []byte("VALUES")
-	ExprSET      = []byte("SET")
-	ExprFROM     = []byte("FROM")
-	ExprWHERE    = []byte("WHERE")
-	ExprGROUPBY  = []byte("GROUP BY")
-	ExprORDERBY  = []byte("ORDER BY")
-	ExprDESC     = []byte("DESC")
-	ExprHAVING   = []byte("HAVING")
-	ExprDISDINCT = []byte("DISTINCT")
-	ExprLIMIT    = []byte("LIMIT")
-	ExprOFFSET   = []byte("OFFSET")
+	ExprSELECT   = qtype.NewBytesString("SELECT")
+	ExprUPDATE   = qtype.NewBytesString("UPDATE")
+	ExprDELETE   = qtype.NewBytesString("DELETE FROM")
+	ExprINSERT   = qtype.NewBytesString("INSERT INTO")
+	ExprVALUES   = qtype.NewBytesString("VALUES")
+	ExprSET      = qtype.NewBytesString("SET")
+	ExprFROM     = qtype.NewBytesString("FROM")
+	ExprWHERE    = qtype.NewBytesString("WHERE")
+	ExprGROUPBY  = qtype.NewBytesString("GROUP BY")
+	ExprORDERBY  = qtype.NewBytesString("ORDER BY")
+	ExprDESC     = qtype.NewBytesString("DESC")
+	ExprHAVING   = qtype.NewBytesString("HAVING")
+	ExprDISDINCT = qtype.NewBytesString("DISTINCT")
+	ExprLIMIT    = qtype.NewBytesString("LIMIT")
+	ExprOFFSET   = qtype.NewBytesString("OFFSET")
 
 	// alias
-	ExprAS = []byte("AS")
+	ExprAS = qtype.NewBytesString("AS")
 
 	// condition operators
-	ExprIN         = []byte("IN")
-	ExprAND        = []byte("AND")
-	ExprOR         = []byte("OR")
-	ExprXOR        = []byte("XOR")
-	ExprIS         = []byte("IS")
-	ExprISNOTNULL  = []byte("IS NOT NULL")
-	ExprISNULL     = []byte("IS NULL")
-	ExprLIKE       = []byte("LIKE")
-	ExprBETWEEN    = []byte("BETWEEN")
-	ExprNOTBETWEEN = []byte("NOT BETWEEN")
+	ExprIN         = qtype.NewBytesString("IN")
+	ExprAND        = qtype.NewBytesString("AND")
+	ExprOR         = qtype.NewBytesString("OR")
+	ExprXOR        = qtype.NewBytesString("XOR")
+	ExprIS         = qtype.NewBytesString("IS")
+	ExprISNOTNULL  = qtype.NewBytesString("IS NOT NULL")
+	ExprISNULL     = qtype.NewBytesString("IS NULL")
+	ExprLIKE       = qtype.NewBytesString("LIKE")
+	ExprBETWEEN    = qtype.NewBytesString("BETWEEN")
+	ExprNOTBETWEEN = qtype.NewBytesString("NOT BETWEEN")
 
 	// join query
-	ExprJOIN      = []byte("JOIN")
-	ExprINNERJOIN = []byte("INNER JOIN")
-	ExprLEFTJOIN  = []byte("LEFT JOIN")
-	ExprRIGHTJOIN = []byte("RIGHT JOIN")
-	ExprUNIONJOIN = []byte("UNION JOIN")
-
-	// glues
-	ExprGlueSpace = []byte(" ")
-	ExprGlueComma = []byte(",")
-	ExprGlueEq    = []byte("=")
-	ExprGlueLt    = []byte("<")
-	ExprGlueGt    = []byte(">")
-	ExprGlueLte   = []byte("<=")
-	ExprGlueGte   = []byte("<=")
-
-	// quotes
-	ExprBracketL = []byte("(")
-	ExprBracketR = []byte(")")
-
-	// end and breaks
-	ExprEnd            = []byte(";")
-	ExprEndWithNewLine = []byte(";\n")
-	ExprNewLine        = []byte("\n")
-	ExprNewLinePrefix  = []byte("\n  ")
+	ExprJOIN      = qtype.NewBytesString("JOIN")
+	ExprINNERJOIN = qtype.NewBytesString("INNER JOIN")
+	ExprLEFTJOIN  = qtype.NewBytesString("LEFT JOIN")
+	ExprRIGHTJOIN = qtype.NewBytesString("RIGHT JOIN")
+	ExprUNIONJOIN = qtype.NewBytesString("UNION JOIN")
 )
 
-// Condition Expressions
-var (
-	ExprCondIs          = []byte("? IS ?")
-	ExprCondIsClause    = []byte("? IS ")
-	ExprCondEq          = []byte("? = ?")
-	ExprCondEqClause    = []byte("? = ")
-	ExprCondNotEq       = []byte("? <> ?")
-	ExprCondNotEqClause = []byte("? <> ")
-	ExprCondLt          = []byte("? < ?")
-	ExprCondLtClause    = []byte("? < ")
-	ExprCondLte         = []byte("? <= ?")
-	ExprCondLteClause   = []byte("? <= ")
-	ExprCondGt          = []byte("? > ?")
-	ExprCondGtClause    = []byte("? > ")
-	ExprCondGte         = []byte("? >= ?")
-	ExprCondGteClause   = []byte("? >= ")
-	ExprCondBetween     = []byte("? BETWEEN ? and ?")
-	ExprCondNotBetween  = []byte("? NOT BETWEEN ? and ?")
-	ExprCondLike        = []byte("? LIKE '%?%'")
-	ExprCondLeftLike    = []byte("? LIKE '?%'")
-	ExprCondRightLike   = []byte("? LIKE '%?'")
-)
-
-const (
-	CondIS = iota + 1
-	CondEQ
-	CondNOTEQ
-	CondLT
-	CondLTE
-	CondGT
-	CondGTE
-	CondBETWEEN
-	CondNOTBETWEEN
-	CondLIKE
-	CondLEFTLIKE
-	CondRIGHTLIKE
-)
-
+// Ex SQL Expressions
 type Ex interface {
-	Expr() []byte
+	Expr() *qtype.Bytes
 	Args() []interface{}
 }
 
+// raw Raw SQL Expression
 type raw struct {
-	expr []byte
+	expr *qtype.Bytes
 	args []interface{}
 }
 
-func NewRawEx(ex []byte, args ...interface{}) *raw {
+func NewRawEx(ex string, args ...interface{}) *raw {
+	return &raw{qtype.NewBytesString(ex), args}
+}
+
+func newRawEx(ex *qtype.Bytes, args ...interface{}) *raw {
 	return &raw{ex, args}
 }
 
-func (r *raw) Expr() []byte {
+func (r *raw) Expr() *qtype.Bytes {
 	return r.expr
 }
 
@@ -124,17 +73,15 @@ func (r *raw) Args() []interface{} {
 	return r.args
 }
 
+type CondEx interface {
+	Ex
+	CondType() CondType
+}
+
 type expr struct {
-	*bytes.Buffer
+	expr *qtype.Bytes
 	args []interface{}
 }
 
-func (e *expr) Expr() []byte        { return e.Bytes() }
+func (e *expr) Expr() *qtype.Bytes  { return e.expr }
 func (e *expr) Args() []interface{} { return e.args }
-
-func Clause(e Ex) Ex {
-	return &raw{
-		append(append(append([]byte{}, '('), e.Expr()...), ')'),
-		e.Args(),
-	}
-}

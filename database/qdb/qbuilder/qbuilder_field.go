@@ -6,21 +6,23 @@ import (
 	"git.querycap.com/ss/lib/util/qstrings"
 )
 
-type FieldDefine interface {
+type Field interface {
 }
 
-type Field struct {
-	ModelDefine                      // m model
-	mrt         *reflect.Type        // mrt model reflect type
-	ctx         *reflect.StructField // ctx struct info
-	key         string               // key database field key
-	name        string               // name field name
-	tab         string               // tab table name
-	quoted      string               // quoted `tab`.`name`
-	db          string               // db database name
+type FieldEx struct {
+	m        ModelDefine          // m model
+	mrt      *reflect.Type        // mrt model reflect type
+	ctx      *reflect.StructField // ctx struct info
+	key      string               // key database field key
+	name     string               // name field name
+	tab      string               // tab table name
+	quoted   string               // quoted `tab`.`name`
+	db       string               // db database name
+	alias    string               // alias builder alias
+	selectEx string
 }
 
-func NewField(m ModelDefine, name string) (*Field, bool) {
+func NewFieldEx(m ModelDefine, name string) (*FieldEx, bool) {
 	mrt := reflect.TypeOf(m)
 	if mrt.Kind() == reflect.Ptr {
 		mrt = mrt.Elem()
@@ -33,180 +35,116 @@ func NewField(m ModelDefine, name string) (*Field, bool) {
 	if !ok {
 		key = "f_" + qstrings.ToSnakeString(name)
 	}
-	return &Field{
-		ModelDefine: m,
-		mrt:         &mrt,
-		ctx:         &ctx,
-		key:         key,
-		name:        name,
-		tab:         m.TableName(),
-		quoted:      "`" + m.TableName() + "`.`" + name + "`",
-		db:          m.DatabaseName(),
+	return &FieldEx{
+		m:      m,
+		mrt:    &mrt,
+		ctx:    &ctx,
+		key:    key,
+		name:   name,
+		tab:    m.TableName(),
+		quoted: "`" + m.TableName() + "`.`" + name + "`",
+		db:     m.DatabaseName(),
+		alias:  "",
 	}, true
 }
 
-func (f *Field) WithModel(m ModelDefine) *Field {
-	return &Field{
-		ModelDefine: m,
-		mrt:         f.mrt,
-		ctx:         f.ctx,
-		key:         f.key,
-		name:        f.name,
-		tab:         f.tab,
-		db:          f.db,
-	}
+func (f *FieldEx) WithModel(m ModelDefine) *FieldEx {
+	ret := *f
+	ret.m = m
+	return &ret
 }
 
-func (f *Field) Is(v interface{}) Ex {
-	if ex, ok := v.(Ex); ok {
-		return &raw{
-			append(ExprCondIsClause, ex.Expr()...),
-			append([]interface{}{f.quoted}, ex.Args()...),
-		}
+func (f *FieldEx) As(alias string) *FieldEx {
+	ret := *f
+	ret.alias = alias
+	if alias != "" {
+		// @todo
 	}
-	if fv, ok := v.(*Field); ok {
-		v = fv.quoted
-	}
-	return &raw{ExprCondIs, []interface{}{f.quoted, v}}
+	return &ret
 }
 
-func (f *Field) Eq(v interface{}) Ex {
-	if ex, ok := v.(Ex); ok {
-		return &raw{
-			append(ExprCondEqClause, ex.Expr()...),
-			append([]interface{}{f.quoted}, ex.Args()...),
-		}
-	}
-	if fv, ok := v.(*Field); ok {
-		v = fv.quoted
-	}
-	return &raw{ExprCondEq, []interface{}{f.quoted, v}}
+func (f *FieldEx) Is(v interface{}) Ex {
+	return FieldCondExpr(CondIS, f, v)
 }
 
-func (f *Field) NotEq(v interface{}) Ex {
-	if ex, ok := v.(Ex); ok {
-		return &raw{
-			append(ExprCondNotEqClause, ex.Expr()...),
-			append([]interface{}{f.quoted}, ex.Args()...),
-		}
-	}
-	if fv, ok := v.(*Field); ok {
-		v = fv.quoted
-	}
-	return &raw{ExprCondNotEq, []interface{}{f.quoted, v}}
+func (f *FieldEx) Eq(v interface{}) Ex {
+	return FieldCondExpr(CondEQ, f, v)
 }
 
-func (f *Field) Gt(v interface{}) Ex {
-	if ex, ok := v.(Ex); ok {
-		return &raw{
-			append(append(append(ExprCondGtClause, '('), ex.Expr()...), ')'),
-			append([]interface{}{f.quoted}, ex.Args()...),
-		}
-	}
-	if fv, ok := v.(*Field); ok {
-		v = fv.quoted
-	}
-	return &raw{ExprCondGt, []interface{}{f.quoted, v}}
+func (f *FieldEx) NotEq(v interface{}) Ex {
+	return FieldCondExpr(CondNOTEQ, f, v)
 }
 
-func (f *Field) Gte(v interface{}) Ex {
-	if ex, ok := v.(Ex); ok {
-		return &raw{
-			append(ExprCondGteClause, ex.Expr()...),
-			append([]interface{}{f.quoted}, ex.Args()...),
-		}
-	}
-	if fv, ok := v.(*Field); ok {
-		v = fv.quoted
-	}
-	return &raw{ExprCondGte, []interface{}{f.quoted, v}}
+func (f *FieldEx) Gt(v interface{}) Ex {
+	return FieldCondExpr(CondGT, f, v)
 }
 
-func (f *Field) Lt(v interface{}) Ex {
-	if ex, ok := v.(Ex); ok {
-		return &raw{
-			append(ExprCondLtClause, ex.Expr()...),
-			append([]interface{}{f.quoted}, ex.Args()...),
-		}
-	}
-	if fv, ok := v.(*Field); ok {
-		v = fv.quoted
-	}
-	return &raw{ExprCondLt, []interface{}{f.quoted, v}}
+func (f *FieldEx) Gte(v interface{}) Ex {
+	return FieldCondExpr(CondGTE, f, v)
 }
 
-func (f *Field) Lte(v interface{}) Ex {
-	if ex, ok := v.(Ex); ok {
-		return &raw{
-			append(ExprCondLteClause, ex.Expr()...),
-			append([]interface{}{f.quoted}, ex.Args()...),
-		}
-	}
-	if fv, ok := v.(*Field); ok {
-		v = fv.quoted
-	}
-	return &raw{ExprCondLte, []interface{}{f.quoted, v}}
-}
-
-func (f *Field) In(v ...interface{}) Ex {
-	return &raw{
-		CondInExpr(len(v)),
-		append(append([]interface{}{}, f.name), v...),
-	}
-}
-
-func (f *Field) InQuery(sub Ex) Ex {
-	return &raw{
-		append(append(append([]byte("? IN ("), sub.Expr()...)), ')'),
-		append(append([]interface{}{}, f.quoted), sub.Args()...),
-	}
-}
-
-func (f *Field) NotIn(v ...interface{}) Ex {
-	return &raw{
-		CondNotInExpr(len(v)),
-		append(append([]interface{}{}, f.quoted), v...),
-	}
-}
-
-func (f *Field) NotInQuery(sub Ex) Ex {
-	return &raw{
-		append(append(append([]byte("? NOT IN ("), sub.Expr()...)), ')'),
-		append(append([]interface{}{}, f.quoted), sub.Args()...),
-	}
-}
-
-func (f *Field) Between(v1, v2 interface{}) Ex {
-	return &raw{
-		ExprCondBetween,
-		[]interface{}{f.quoted, v1, v2},
-	}
-}
-
-func (f *Field) NotBetween(v1, v2 interface{}) Ex {
-	return &raw{
-		ExprCondNotBetween,
-		[]interface{}{f.quoted, v1, v2},
-	}
-}
-
-func (f *Field) Like(v string) Ex {
-	return &raw{
-		ExprCondLike,
-		[]interface{}{f.quoted, v}, // @todo ? string with quote
-	}
-}
-
-func (f *Field) LeftLike(v string) Ex {
-	return &raw{
-		ExprCondLeftLike,
-		[]interface{}{f.quoted, v}, // @todo ? string with quote
-	}
-}
-
-func (f *Field) RightLike(v string) Ex {
-	return &raw{
-		ExprCondRightLike,
-		[]interface{}{f.quoted, v}, // @todo ? string with quote
-	}
-}
+// func (f *FieldEx) Lt(v interface{}) Ex {
+// }
+//
+// func (f *FieldEx) Lte(v interface{}) Ex {
+// }
+//
+// func (f *FieldEx) In(v ...interface{}) Ex {
+// }
+//
+// func (f *FieldEx) InQuery(sub Ex) Ex {
+// 	return &raw{
+// 		append(append(append([]byte("? IN ("), sub.Expr()...)), ')'),
+// 		append(append([]interface{}{}, f.quoted), sub.Args()...),
+// 	}
+// }
+//
+// func (f *FieldEx) NotIn(v ...interface{}) Ex {
+// 	return &raw{
+// 		CondNotInExpr(len(v)),
+// 		append(append([]interface{}{}, f.quoted), v...),
+// 	}
+// }
+//
+// func (f *FieldEx) NotInQuery(sub Ex) Ex {
+// 	return &raw{
+// 		append(append(append([]byte("? NOT IN ("), sub.Expr()...)), ')'),
+// 		append(append([]interface{}{}, f.quoted), sub.Args()...),
+// 	}
+// }
+//
+// func (f *FieldEx) Between(v1, v2 interface{}) Ex {
+// 	return &raw{
+// 		ExprCondBetween,
+// 		[]interface{}{f.quoted, v1, v2},
+// 	}
+// }
+//
+// func (f *FieldEx) NotBetween(v1, v2 interface{}) Ex {
+// 	return &raw{
+// 		ExprCondNotBetween,
+// 		[]interface{}{f.quoted, v1, v2},
+// 	}
+// }
+//
+// func (f *FieldEx) Like(v string) Ex {
+// 	return &raw{
+// 		ExprCondLike,
+// 		[]interface{}{f.quoted, v}, // @todo ? string with quote
+// 	}
+// }
+//
+// func (f *FieldEx) LeftLike(v string) Ex {
+// 	return &raw{
+// 		ExprCondLLike,
+// 		[]interface{}{f.quoted, v}, // @todo ? string with quote
+// 	}
+// }
+//
+// func (f *FieldEx) RightLike(v string) Ex {
+// 	return &raw{
+// 		ExprCondRLike,
+// 		[]interface{}{f.quoted, v}, // @todo ? string with quote
+// 	}
+// }
+//

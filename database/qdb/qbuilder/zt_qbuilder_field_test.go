@@ -1,42 +1,55 @@
 package qbuilder_test
 
 import (
-	"testing"
+	"database/sql"
 
 	"git.querycap.com/ss/lib/database/qdb/qbuilder"
 )
 
 type m struct {
-	A int    `db:"f_a"`
-	B string `db:"f_b"`
+	ID   uint64 `db:"f_id"`
+	Path string `db:"f_Path"`
 }
 
-//go:linkname
+var (
+	_  qbuilder.ModelDefine = (*m)(nil)
+	db *sql.DB
+)
 
-var _ qbuilder.ModelDefine = (*m)(nil)
+func (m *m) DatabaseName() string { return "event" }
+func (m *m) TableName() string    { return "event" }
 
-func (m *m) DatabaseName() string { return "tmp" }
-func (m *m) TableName() string    { return "tmp" }
-
-func TestFieldExpr(t *testing.T) {
-	m := &m{1, "100"}
-	fa, ok := qbuilder.NewField(m, "A")
-	if !ok {
-		t.Error("!ok")
-		return
-	}
-	exprs := []qbuilder.Ex{
-		fa.Is("xxx"),
-		fa.Eq(1),
-		fa.NotEq(1),
-		fa.Gt(100),
-		fa.Gt(qbuilder.NewRawEx([]byte("select ? from ?"), "t_tmp_field", "t_tmp")),
-		fa.Gte(100),
-		fa.Lt(100),
-		fa.Lte(100),
-	}
-	for _, e := range exprs {
-		t.Logf("expr: %s\n", string(e.Expr()))
-		t.Logf("args: %v\n", e.Args())
+func init() {
+	var err error
+	db, err = sql.Open("sqlite3", "/Users/sincos/sincos/tmp/ss/event")
+	if err != nil {
+		panic(err)
 	}
 }
+
+// func TestFieldExpr(t *testing.T) {
+// 	m := &m{1, "100"}
+// 	fID, ok := qbuilder.NewFieldEx(m, "ID")
+// 	if !ok {
+// 		t.Error("!ok")
+// 		return
+// 	}
+// 	fPath, ok := qbuilder.NewFieldEx(m, "Path")
+// 	exprs := []qbuilder.Ex{
+// 		fID.Is("xxx"),
+// 		fID.Eq(1),
+// 		fID.NotEq(1),
+// 		fID.Gt(100),
+// 		// fID.Gt(qbuilder.NewRawEx([]byte("select ? from ?"), "t_tmp_field", "t_tmp")),
+// 		fID.Gte(100),
+// 		fID.Lt(100),
+// 		fID.Lte(100),
+// 	}
+// 	for _, e := range exprs {
+// 		t.Logf("expr: %s\n", string(e.Expr()))
+// 		t.Logf("args: %v\n", e.Args())
+// 	}
+// 	ex := qbuilder.Select(fPath).From(m).Where(fPath.Eq(1))
+// 	db.Query()
+// }
+//
