@@ -6,5 +6,4 @@ type Model struct {
 }
 
 type Field struct {
-
 }

@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 	"time"
-	
+
 	"git.querycap.com/ss/lib/net/qsock/qbuf"
 	"git.querycap.com/ss/lib/net/qsock/qbuf/qbuf_packet"
 	"git.querycap.com/ss/lib/net/qsock/qbuf/qbuf_stream"
@@ -35,7 +35,7 @@ func NewServer(options ...ServerOptionSetter) (*Server, error) {
 			workerPoolSize: 1024,
 		},
 	}
-	
+
 	for _, opt := range options {
 		opt(srv.ServerOption)
 	}
@@ -51,14 +51,14 @@ func NewServer(options ...ServerOptionSetter) (*Server, error) {
 	if srv.routes != nil || srv.handler != nil {
 		srv.worker = qroutines.NewLimitedWorkerPool(srv.workerPoolSize)
 	}
-	
+
 	err := srv.listen()
 	if err != nil {
 		return nil, err
 	}
-	
+
 	go srv.run()
-	
+
 	return srv, nil
 }
 
@@ -145,7 +145,7 @@ func (s *Server) run() {
 			msg  qmsg.Message
 			size = 0
 		)
-		
+
 		for {
 			if err != nil {
 				fmt.Printf("listener: %v\n", err)

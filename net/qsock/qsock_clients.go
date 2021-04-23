@@ -21,9 +21,9 @@ func NewClientManager() *clients {
 func (cs *clients) New(n *Node) {
 	cs.Lock()
 	defer cs.Unlock()
-	
+
 	cs.connections[n.ID()] = n
-	
+
 	go func(n *Node) {
 		defer cs.Remove(n.ID())
 		for {
@@ -42,7 +42,7 @@ func (cs *clients) New(n *Node) {
 func (cs *clients) Remove(id string, reason ...interface{}) {
 	cs.Lock()
 	defer cs.Unlock()
-	
+
 	n := cs.connections[id]
 	if n != nil {
 		n.Stop(reason...)
@@ -69,7 +69,7 @@ func (cs *clients) Length() (int, int) {
 func (cs *clients) Reset() {
 	cs.Lock()
 	defer cs.Unlock()
-	
+
 	for id, n := range cs.connections {
 		if n != nil {
 			n.Stop("server reset clients")

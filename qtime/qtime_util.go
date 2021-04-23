@@ -2,7 +2,7 @@ package qtime
 
 import (
 	"time"
-	
+
 	_ "github.com/uniplaces/carbon"
 )
 

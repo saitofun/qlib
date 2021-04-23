@@ -2,7 +2,7 @@ package sync
 
 import (
 	"sync"
-	
+
 	"git.querycap.com/ss/lib/container/qtype"
 )
 
