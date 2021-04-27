@@ -1,4 +1,4 @@
-// Package qmsg provides interfaces for socket communication
+// Package qmsg provides interfaces for universal message
 package qmsg
 
 type Type interface {

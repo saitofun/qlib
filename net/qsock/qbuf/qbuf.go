@@ -3,13 +3,13 @@ package qbuf
 import "errors"
 
 type Buffer interface {
-	Len() int
-	Cap() int
-	Read([]byte) (int, error)
-	Write([]byte) (int, error)
-	ResetAndWrite([]byte) error
-	Probe(int) ([]byte, error)
-	Shift(int) error
+	Len() int                     // Len buffer read length
+	Cap() int                     // Cap buffer capacity
+	Read(out []byte) (int, error) // Read read len(out)
+	Write(in []byte) (int, error) // Write write in
+	ResetAndWrite([]byte) error   // ResetAndWrite reset buffer and write
+	Probe(int) ([]byte, error)    // Probe read without shift read position
+	Shift(int) error              // Shift shift read position
 	Bytes() []byte
 	Reset()
 }

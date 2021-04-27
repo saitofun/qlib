@@ -1,3 +1,4 @@
+// Package qtype qtype.Bytes provide global byte slice
 package qtype
 
 import (
@@ -41,12 +42,12 @@ func init() {
 	return
 }
 
-func (p *pool) get(len int) *qlist.Element {
-	if len == 0 {
+func (p *pool) get(need int) *qlist.Element {
+	if need == 0 {
 		return nil
 	}
 
-	n := grade(len)
+	n := grade(need)
 
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -87,7 +88,7 @@ func grade(len int) (grd int) {
 
 type bytes = []byte
 type Bytes struct {
-	bytes
+	dat bytes
 	ele *qlist.Element
 }
 
@@ -125,11 +126,11 @@ func (b *Bytes) AppendBytes(bytes ...*Bytes) *Bytes {
 	return b
 }
 
-func (b *Bytes) Len() int { return len(b.bytes) }
+func (b *Bytes) Len() int { return len(b.dat) }
 
-func (b *Bytes) Cap() int { return cap(b.bytes) }
+func (b *Bytes) Cap() int { return cap(b.dat) }
 
-func (b *Bytes) String() string { return string(b.bytes) }
+func (b *Bytes) String() string { return string(b.dat) }
 
 func (b *Bytes) try(delta int) {
 	return

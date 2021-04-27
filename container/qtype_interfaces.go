@@ -112,3 +112,20 @@ type _string interface {
 	Val() string
 	Set(new string) (old string)
 }
+
+var (
+	_ _boolean = (*qtype.Bool)(nil)
+	_ _int     = (*qtype.Int)(nil)
+	_ _int8    = (*qtype.Int8)(nil)
+	_ _int16   = (*qtype.Int16)(nil)
+	_ _int32   = (*qtype.Int32)(nil)
+	_ _int64   = (*qtype.Int64)(nil)
+	_ _uint    = (*qtype.UInt)(nil)
+	_ _uint8   = (*qtype.UInt8)(nil)
+	_ _uint16  = (*qtype.UInt16)(nil)
+	_ _uint32  = (*qtype.UInt32)(nil)
+	_ _uint64  = (*qtype.UInt64)(nil)
+	_ _float32 = (*qtype.Float32)(nil)
+	_ _float64 = (*qtype.Float64)(nil)
+	_ _string  = (*qtype.String)(nil)
+)

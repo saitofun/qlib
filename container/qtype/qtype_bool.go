@@ -7,9 +7,7 @@ import (
 	"git.querycap.com/ss/lib/encoding/qjson"
 )
 
-type Bool struct {
-	int32
-}
+type Bool struct{ int32 }
 
 var (
 	fJSON  = []byte("false")

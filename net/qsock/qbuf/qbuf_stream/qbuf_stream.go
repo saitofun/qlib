@@ -70,6 +70,15 @@ func (s *buffer) read(n int) ([]byte, error) {
 	return ret, nil
 }
 
+func (s *buffer) resize() {
+	buf := make([]byte, s.size<<1)
+	ori, _ := s.read(s.rs)
+	copy(buf[0:], ori[0:])
+	s.buf = buf
+	s.size <<= 1
+	s.r, s.w, s.rs, s.ws = 0, len(ori), len(ori), s.size-len(ori)
+}
+
 func (s *buffer) Len() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -163,14 +172,4 @@ func (s *buffer) Reset() {
 	defer s.mu.Unlock()
 
 	s.r, s.w, s.rs, s.ws = 0, 0, 0, s.size
-}
-
-func (s *buffer) resize() {
-	buf := make([]byte, s.size<<1)
-
-	ori, _ := s.read(s.rs)
-	copy(buf[0:], ori[0:])
-	s.buf = buf
-	s.size <<= 1
-	s.r, s.w, s.rs, s.ws = 0, len(ori), len(ori), s.size-len(ori)
 }
