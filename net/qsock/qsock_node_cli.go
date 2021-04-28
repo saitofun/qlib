@@ -49,9 +49,9 @@ func NewClient(options ...ClientOptionSetter) (*Client, error) {
 	}
 	n.SetParser(cli.parser)
 	if cli.protocol == ProtocolUnknown {
-		n.protocol = cli.protocol
 		return nil, ENodeInvalidProtocol
 	}
+	n.protocol = cli.protocol
 	if cli.protocol == ProtocolTCP {
 		n.SetBuffers(qbuf_stream.New(cli.readBufferCap),
 			qbuf_packet.New(cli.writeBufferCap))
