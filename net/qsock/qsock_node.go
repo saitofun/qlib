@@ -258,15 +258,15 @@ func (n *Node) recv() {
 				if n.binder.Push(msg) {
 					goto check
 				}
-				if (n.routes != nil || n.handler != nil) && n.worker != nil {
-					if n.routes != nil {
-						if jobs = n.routes.GetJobs(&Event{n, msg}); len(jobs) > 0 {
-							n.worker.Add(jobs...)
-						}
+				if n.routes != nil {
+					if jobs = n.routes.GetJobs(&Event{n, msg}); len(jobs) > 0 {
+						n.worker.Add(jobs...)
+						goto check
 					}
-					if n.handler != nil {
-						n.worker.Add(func() { n.handler(&Event{n, msg}) })
-					}
+				}
+				if n.handler != nil {
+					n.worker.Add(func() { n.handler(&Event{n, msg}) })
+					goto check
 				}
 				n.rq <- msg
 			check:
