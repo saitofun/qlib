@@ -267,6 +267,18 @@ func (l *List) ReverseRange(f func(*Element) bool) {
 	}
 }
 
+func (l *List) RLockDo(f func(*list.List)) {
+	l.rLock()
+	defer l.rUnlock()
+	f(&l.List)
+}
+
+func (l *List) LockDo(f func(*list.List)) {
+	l.lock()
+	defer l.unlock()
+	f(&l.List)
+}
+
 func (l *List) String() string {
 	return `[` + l.Join(",") + `]`
 }

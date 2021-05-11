@@ -8,7 +8,7 @@ import (
 
 	"git.querycap.com/ss/lib/encoding"
 	"git.querycap.com/ss/lib/encoding/qjson"
-	"git.querycap.com/ss/lib/qtime"
+	"git.querycap.com/ss/lib/os/qtime"
 )
 
 func Int(v interface{}) int64     { return 0 }

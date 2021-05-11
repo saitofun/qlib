@@ -1,4 +1,4 @@
-package qproc
+package qipc
 
 import (
 	"git.querycap.com/ss/lib/net/qsock/qmsg"

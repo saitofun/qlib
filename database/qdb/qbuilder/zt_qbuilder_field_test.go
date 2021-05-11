@@ -2,8 +2,6 @@ package qbuilder_test
 
 import (
 	"database/sql"
-
-	"git.querycap.com/ss/lib/database/qdb/qbuilder"
 )
 
 type m struct {
@@ -12,20 +10,20 @@ type m struct {
 }
 
 var (
-	_  qbuilder.ModelDefine = (*m)(nil)
+	// _  qbuilder.ModelDefine = (*m)(nil)
 	db *sql.DB
 )
 
 func (m *m) DatabaseName() string { return "event" }
 func (m *m) TableName() string    { return "event" }
 
-func init() {
-	var err error
-	db, err = sql.Open("sqlite3", "/Users/sincos/sincos/tmp/ss/event")
-	if err != nil {
-		panic(err)
-	}
-}
+// func init() {
+// 	var err error
+// 	db, err = sql.Open("sqlite3", "/Users/sincos/sincos/tmp/ss/event")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
 
 // func TestFieldExpr(t *testing.T) {
 // 	m := &m{1, "100"}

@@ -1,4 +1,4 @@
-package qproc
+package qipc
 
 import (
 	"fmt"

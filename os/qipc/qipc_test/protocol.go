@@ -1,4 +1,4 @@
-package qproc_demo
+package qipc_test
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"git.querycap.com/ss/lib/encoding/qjson"
 	"git.querycap.com/ss/lib/net/qsock/qbuf"
 	"git.querycap.com/ss/lib/net/qsock/qmsg"
-	"git.querycap.com/ss/lib/qproc"
+	"git.querycap.com/ss/lib/os/qipc"
 	"github.com/google/uuid"
 )
 
@@ -82,8 +82,8 @@ func (p *parser) Unmarshal(buf qbuf.Buffer) (qmsg.Message, error) {
 	return msg, nil
 }
 
-var _ qproc.IPCMessage = (*req)(nil)
-var _ qproc.IPCMessage = (*rsp)(nil)
+var _ qipc.IPCMessage = (*req)(nil)
+var _ qipc.IPCMessage = (*rsp)(nil)
 var _ qmsg.Parser = (*parser)(nil)
 
 func NewReq() *req {

@@ -1,9 +1,5 @@
 package qbuilder
 
-import (
-	"fmt"
-)
-
 var (
 	ExprCondIs          = []byte("? IS ?")
 	ExprCondIsClause    = []byte("? IS ")
@@ -69,23 +65,24 @@ var cond = map[CondType]*Cond{
 	CondIN:         {CondIN, nil, nil, -1},
 }
 
-func FieldCondExpr(typ CondType, f *FieldEx, args ...interface{}) Ex {
-	var ce = cond[typ] // condition expression
-	if ce == nil {
-		panic(fmt.Sprintf("Unknown type: %v", typ))
-	}
-	if len(args) != ce.ArgLen-1 {
-		panic(fmt.Sprintf("Unexpected arg len: %v-%v", len(args), ce.ArgLen))
-	}
-	ex, ok := args[0].(Ex)
-	if len(args) == 2 && ok {
-		return &raw{
-			clause(ce.WithClauseExpr),
-			append(append([]interface{}{}, args[0]), ex.Args()...),
-		}
-	}
-	return &raw{
-		cond.Expr,
-		append([]interface{}{f.key}, args...),
-	}
-}
+// func FieldCondExpr(typ CondType, f *FieldEx, args ...interface{}) Ex {
+// 	var ce = cond[typ] // condition expression
+// 	if ce == nil {
+// 		panic(fmt.Sprintf("Unknown type: %v", typ))
+// 	}
+// 	if len(args) != ce.ArgLen-1 {
+// 		panic(fmt.Sprintf("Unexpected arg len: %v-%v", len(args), ce.ArgLen))
+// 	}
+// 	ex, ok := args[0].(Ex)
+// 	if len(args) == 2 && ok {
+// 		return &raw{
+// 			clause(ce.WithClauseExpr),
+// 			append(append([]interface{}{}, args[0]), ex.Args()...),
+// 		}
+// 	}
+// 	return &raw{
+// 		cond.Expr,
+// 		append([]interface{}{f.key}, args...),
+// 	}
+// }
+//
