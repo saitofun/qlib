@@ -59,7 +59,7 @@ func TestTCPClient(t *testing.T) {
 			continue
 		}
 		fmt.Printf("<- %s, %d\n", qjson.UnsafeMarshalString(rsp),
-			rsp.(qmsg.WithTimestamp).GetTimestamp()-req.GetTimestamp())
+			(rsp.(qmsg.WithTimestamp).GetTimestamp()-req.GetTimestamp())/1e6)
 		time.Sleep(250 * time.Millisecond)
 		req.Renew()
 	}

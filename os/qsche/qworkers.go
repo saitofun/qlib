@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"git.querycap.com/ss/lib/container/qqueue"
-	"git.querycap.com/ss/lib/os/qtime"
 )
 
 const defaultPoolLimit = 1024
@@ -21,17 +20,24 @@ func NewWorkers(lmt ...int) *Workers {
 	return &Workers{q: qqueue.NewLimited(limit)}
 }
 
-func (p *Workers) Add(j Job) *Context {
-	ctx := NewContext(j)
+func (p *Workers) Add(j Job) (ctx *Context) {
+	defer func() { ctx.Committed() }()
+	ctx = NewContext(j)
 	p.q.Push(ctx)
-	ctx.Committed = qtime.Now()
 	return ctx
 }
 
-func (p *Workers) AddWithDeadline(j Job, d time.Duration) *Context {
-	ctx := NewContext(j)
-	p.q.Push(ctx.WithDeadline(d))
-	ctx.Committed = qtime.Now()
+func (p *Workers) AddWithDeadline(j Job, deadline time.Time) (ctx *Context) {
+	defer func() { ctx.Committed() }()
+	ctx = NewContext(j)
+	p.q.Push(ctx.WithDeadline(deadline))
+	return ctx
+}
+
+func (p *Workers) AddWithTimeout(j Job, timeout time.Duration) (ctx *Context) {
+	defer func() { ctx.Committed() }()
+	ctx = NewContext(j)
+	p.q.Push(ctx.WithTimeout(timeout))
 	return ctx
 }
 

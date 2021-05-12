@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"git.querycap.com/ss/lib/encoding/qjson"
-	"git.querycap.com/ss/lib/qtime"
+	"git.querycap.com/ss/lib/os/qtime"
 )
 
 type Struct struct {
