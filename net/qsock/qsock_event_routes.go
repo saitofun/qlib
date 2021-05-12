@@ -4,6 +4,8 @@ import (
 	"sync"
 
 	"git.querycap.com/ss/lib/net/qsock/qmsg"
+	"git.querycap.com/ss/lib/os/qsche"
+	"git.querycap.com/ss/lib/os/qsync"
 )
 
 type (
@@ -29,24 +31,16 @@ func (r *Routes) Register(t qmsg.Type, fns ...Handler) {
 	r.v[t.String()] = append(r.v[t.String()], fns...)
 }
 
-func (r *Routes) GetHandlers(t qmsg.Type) []Handler {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	ret, ok := r.v[t.String()]
-	if ok {
-		return ret
-	}
-	return nil
-}
-
-func (r *Routes) GetJobs(ev *Event) []Job {
-	var handlers = r.GetHandlers(ev.Payload().Type())
+func (r *Routes) EventJobs(ev *Event) (ret []qsche.Job) {
+	var handlers []Handler
+	qsync.Guard(r.mu).Do(func() {
+		handlers = r.v[ev.Payload().Type().String()]
+	})
 	if len(handlers) == 0 {
 		return nil
 	}
-	var ret []func()
 	for _, h := range handlers {
-		ret = append(ret, func() { h(ev) })
+		ret = append(ret, qsche.NewFn(func() { h(ev) }))
 	}
 	return ret
 }

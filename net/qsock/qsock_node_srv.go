@@ -11,7 +11,7 @@ import (
 	"git.querycap.com/ss/lib/net/qsock/qbuf/qbuf_packet"
 	"git.querycap.com/ss/lib/net/qsock/qbuf/qbuf_stream"
 	"git.querycap.com/ss/lib/net/qsock/qmsg"
-	"git.querycap.com/ss/lib/qroutines"
+	"git.querycap.com/ss/lib/os/qsche"
 )
 
 type Server struct {
@@ -21,7 +21,7 @@ type Server struct {
 	ln     net.Listener
 	udp    *net.UDPConn
 	buf    qbuf.Buffer
-	worker *qroutines.LimitedWorkerPool
+	worker qsche.WorkersScheduler
 }
 
 func NewServer(options ...ServerOptionSetter) (*Server, error) {
@@ -49,7 +49,8 @@ func NewServer(options ...ServerOptionSetter) (*Server, error) {
 		return nil, ENodeInvalidProtocol
 	}
 	if srv.routes != nil || srv.handler != nil {
-		srv.worker = qroutines.NewLimitedWorkerPool(srv.workerPoolSize)
+		// TODO concurrency option
+		srv.worker = qsche.RunConScheduler(1024, srv.workerPoolSize)
 	}
 
 	err := srv.listen()
@@ -186,7 +187,7 @@ func (s *Server) Serve() {
 	for {
 		ev := s.ReceiveEvent()
 		if s.routes != nil {
-			if jobs := s.routes.GetJobs(ev); len(jobs) > 0 {
+			if jobs := s.routes.EventJobs(ev); len(jobs) > 0 {
 				for _, j := range jobs {
 					s.worker.Add(j)
 				}
@@ -194,7 +195,7 @@ func (s *Server) Serve() {
 			continue
 		}
 		if s.handler != nil {
-			s.worker.Add(func() { s.handler(ev) })
+			s.worker.Add(qsche.NewFn(func() { s.handler(ev) }))
 		}
 	}
 }

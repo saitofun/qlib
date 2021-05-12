@@ -7,7 +7,7 @@ import (
 	"git.querycap.com/ss/lib/net/qsock/qbuf/qbuf_packet"
 	"git.querycap.com/ss/lib/net/qsock/qbuf/qbuf_stream"
 	"git.querycap.com/ss/lib/net/qsock/qmsg"
-	"git.querycap.com/ss/lib/qroutines"
+	"git.querycap.com/ss/lib/os/qsche"
 )
 
 type Client struct {
@@ -61,7 +61,8 @@ func NewClient(options ...ClientOptionSetter) (*Client, error) {
 	}
 	n.id = cli.nodeID
 	if cli.routes != nil || cli.handler != nil {
-		n.worker = qroutines.NewLimitedWorkerPool(cli.workerPoolSize)
+		// TODO concurrency option
+		n.worker = qsche.RunConScheduler(1024, cli.workerPoolSize)
 	}
 	n.routes = cli.routes
 	n.handler = cli.handler

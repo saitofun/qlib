@@ -12,7 +12,7 @@ type concurrent struct {
 	cancel context.CancelFunc
 }
 
-func NewConScheduler(con int, lmt ...int) Scheduler {
+func NewConScheduler(con int, lmt ...int) WorkersScheduler {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &concurrent{
 		Workers: NewWorkers(lmt...),
@@ -22,6 +22,12 @@ func NewConScheduler(con int, lmt ...int) Scheduler {
 	}
 }
 
+func RunConScheduler(con int, lmt ...int) WorkersScheduler {
+	ret := NewConScheduler(con, lmt...)
+	go ret.Run()
+	return ret
+}
+
 func (c *concurrent) run() {
 	for {
 		select {
@@ -29,7 +35,7 @@ func (c *concurrent) run() {
 			return
 		default:
 			if ctx := c.Pop(); ctx != nil {
-				ctx.Do(c.ctx)
+				ctx.Exec(c.ctx)
 			}
 		}
 	}

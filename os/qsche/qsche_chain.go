@@ -8,13 +8,19 @@ type chain struct {
 	cancel context.CancelFunc
 }
 
-func NewChainedScheduler(lmt ...int) Scheduler {
+func NewChainedScheduler(lmt ...int) WorkersScheduler {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &chain{
 		Workers: NewWorkers(lmt...),
 		ctx:     ctx,
 		cancel:  cancel,
 	}
+}
+
+func RunChainedScheduler(lmt ...int) WorkersScheduler {
+	ret := NewChainedScheduler(lmt...)
+	go ret.Run()
+	return ret
 }
 
 func (c *chain) Run() {
@@ -24,7 +30,7 @@ func (c *chain) Run() {
 			return
 		default:
 			if ctx := c.Pop(); ctx != nil {
-				ctx.Do(c.ctx)
+				ctx.Exec(c.ctx)
 			}
 		}
 	}

@@ -21,7 +21,7 @@ func NewWorkers(lmt ...int) *Workers {
 	return &Workers{q: qqueue.NewLimited(limit)}
 }
 
-func (p *Workers) AddJob(j Job) *Context {
+func (p *Workers) Add(j Job) *Context {
 	ctx := NewContext(j)
 	p.q.Push(ctx)
 	ctx.Committed = qtime.Now()

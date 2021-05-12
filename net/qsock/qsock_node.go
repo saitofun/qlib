@@ -10,7 +10,7 @@ import (
 
 	"git.querycap.com/ss/lib/net/qsock/qbuf"
 	"git.querycap.com/ss/lib/net/qsock/qmsg"
-	"git.querycap.com/ss/lib/qroutines"
+	"git.querycap.com/ss/lib/os/qsche"
 )
 
 type NodeTask struct {
@@ -30,7 +30,7 @@ type Node struct {
 	routes  *Routes
 	handler Handler
 	parser  qmsg.Parser
-	worker  *qroutines.LimitedWorkerPool
+	worker  qsche.WorkersScheduler
 
 	id        string
 	ctx       context.Context
@@ -221,7 +221,6 @@ func (n *Node) recv() {
 		msg  qmsg.Message
 		err  error
 		dat  = make([]byte, DefaultBufferCapacity)
-		jobs []qroutines.Job
 		size int
 	)
 
@@ -259,13 +258,15 @@ func (n *Node) recv() {
 					goto check
 				}
 				if n.routes != nil {
-					if jobs = n.routes.GetJobs(&Event{n, msg}); len(jobs) > 0 {
-						n.worker.Add(jobs...)
+					if jobs := n.routes.EventJobs(&Event{n, msg}); len(jobs) > 0 {
+						for i := range jobs {
+							n.worker.Add(jobs[i])
+						}
 						goto check
 					}
 				}
 				if n.handler != nil {
-					n.worker.Add(func() { n.handler(&Event{n, msg}) })
+					n.worker.Add(qsche.NewFn(func() { n.handler(&Event{n, msg}) }))
 					goto check
 				}
 				n.rq <- msg
