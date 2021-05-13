@@ -7,7 +7,7 @@ import (
 	"git.querycap.com/ss/lib/os/qtime"
 )
 
-const defaultPoolLimit = 1024
+const defaultPoolLimit = 64
 
 type Workers struct {
 	q qqueue.Queue
