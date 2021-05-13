@@ -69,15 +69,16 @@ func (c *concurrent) Run() {
 	if c.started.CAS(false, true) {
 		if c.con == 0 {
 			c.run()
+		} else {
+			wg := sync.WaitGroup{}
+			for i := 0; i < c.con; i++ {
+				go func() {
+					wg.Add(1)
+					c.routine()
+				}()
+			}
+			wg.Wait()
 		}
-		wg := sync.WaitGroup{}
-		for i := 0; i < c.con; i++ {
-			go func() {
-				wg.Add(1)
-				c.routine()
-			}()
-		}
-		wg.Wait()
 	}
 }
 
