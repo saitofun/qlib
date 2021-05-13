@@ -61,8 +61,7 @@ func NewClient(options ...ClientOptionSetter) (*Client, error) {
 	}
 	n.id = cli.nodeID
 	if cli.routes != nil || cli.handler != nil {
-		// TODO concurrency option
-		n.worker = qsche.RunConScheduler(1024, cli.workerPoolSize)
+		n.worker = qsche.RunConScheduler(cli.workerPoolSize)
 	}
 	n.routes = cli.routes
 	n.handler = cli.handler

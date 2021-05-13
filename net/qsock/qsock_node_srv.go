@@ -50,7 +50,7 @@ func NewServer(options ...ServerOptionSetter) (*Server, error) {
 	}
 	if srv.routes != nil || srv.handler != nil {
 		// TODO concurrency option
-		srv.worker = qsche.RunConScheduler(1024, srv.workerPoolSize)
+		srv.worker = qsche.RunConScheduler(srv.workerPoolSize)
 	}
 
 	err := srv.listen()
