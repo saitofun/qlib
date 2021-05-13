@@ -3,22 +3,26 @@ package qsche
 import (
 	"context"
 	"time"
+
+	"git.querycap.com/ss/lib/container/qtype"
 )
 
 type timed struct {
-	du     time.Duration
-	fn     func()
-	ctx    context.Context
-	cancel context.CancelFunc
+	started *qtype.Bool
+	du      time.Duration
+	fn      func()
+	ctx     context.Context
+	cancel  context.CancelFunc
 }
 
 func NewTimedScheduler(fn func(), du time.Duration) Scheduler {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &timed{
-		du:     du,
-		fn:     fn,
-		ctx:    ctx,
-		cancel: cancel,
+		started: qtype.NewBool(),
+		du:      du,
+		fn:      fn,
+		ctx:     ctx,
+		cancel:  cancel,
 	}
 }
 
@@ -28,13 +32,22 @@ func RunTimedScheduler(fn func(), du time.Duration) Scheduler {
 	return ret
 }
 
+func (t *timed) WithContext(ctx context.Context) Scheduler {
+	t.ctx, t.cancel = context.WithCancel(ctx)
+	return t
+}
+
+func (t *timed) Started() bool { return t.started.Val() }
+
 func (t *timed) Run() {
-	for {
-		select {
-		case <-t.ctx.Done():
-			return
-		case <-time.After(t.du):
-			go t.fn()
+	if t.started.CAS(false, true) {
+		for {
+			select {
+			case <-t.ctx.Done():
+				return
+			case <-time.After(t.du):
+				go t.fn()
+			}
 		}
 	}
 }
