@@ -70,7 +70,7 @@ func NewContext(j Job) *Context {
 	ret := &Context{
 		Job:    j,
 		result: make(chan *Result, 1),
-		done:   make(chan struct{}),
+		done:   make(chan struct{}, 1),
 	}
 	ret.Stages[0] = qtime.Now()
 	return ret
@@ -96,7 +96,6 @@ func (c *Context) Err() error {
 }
 
 func (c *Context) Exec(ctx context.Context) {
-	c.res = &Result{}
 	if c.deadline != nil {
 		ctx, _ = context.WithDeadline(ctx, c.deadline.Time)
 	}
@@ -105,6 +104,7 @@ func (c *Context) Exec(ctx context.Context) {
 		c.res.error = ctx.Err()
 	default:
 		c.Stages[2] = qtime.Now()
+		c.res = &Result{}
 		c.res.Val, c.res.error = c.Job.Do()
 		c.Stages[3] = qtime.Now()
 		c.result <- c.res
