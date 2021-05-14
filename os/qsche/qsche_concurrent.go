@@ -75,6 +75,7 @@ func (c *concurrent) Run() {
 				go func() {
 					wg.Add(1)
 					c.routine()
+					wg.Done()
 				}()
 			}
 			wg.Wait()
