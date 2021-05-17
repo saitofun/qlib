@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"testing"
 
-	"git.querycap.com/ss/lib/qtime"
+	"git.querycap.com/ss/lib/os/qtime"
 )
 
 func TestTime_JSON(t *testing.T) {

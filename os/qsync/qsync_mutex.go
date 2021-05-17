@@ -6,6 +6,8 @@ import (
 	"git.querycap.com/ss/lib/container/qtype"
 )
 
+// @TODO
+
 type Mutex struct {
 	qtype.Int32
 	sync.Mutex
