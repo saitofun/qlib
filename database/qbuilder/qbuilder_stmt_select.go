@@ -5,7 +5,7 @@ package qbuilder
 // 	Models    []ModelDefine
 // 	Cond      CondExpr
 // 	Orders    []OrderDefine
-// 	Joins []Joins
+// 	Joins     []Joins
 // 	WithLimit int
 // 	*expr
 // }
@@ -33,4 +33,3 @@ package qbuilder
 // func Select(f ...Field) *SelectStmt {
 // 	return &SelectStmt{Fields: f}
 // }
-//
