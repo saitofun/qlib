@@ -1,7 +1,6 @@
 package qjson_test
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -16,28 +15,29 @@ type Struct struct {
 }
 
 type Embedded struct {
-	C int    `json:"c,string"`
-	D string `json:"d,int"`
+	C                        int    `json:"c,string"`
+	D                        string `json:"d,int"`
+	qjson.StringMemberMarker `json:"-"`
 }
 
-// func (v Embedded) MarshalJSON() ([]byte, error) {
-// 	type tmp Embedded
-// 	var val = tmp(v)
-// 	return qjson.Stringer.Marshal(val)
-// }
-//
-// func (v *Embedded) UnmarshalJSON(data []byte) error {
-// 	type tmp Embedded
-// 	var val = (*tmp)(v)
-// 	return qjson.Stringer.Unmarshal(data, val)
-// }
+func (v Embedded) MarshalJSON() ([]byte, error) {
+	if v.Stepped() {
+		return nil, nil
+	}
+	v.Step()
+	return qjson.Marshal(v)
+}
+
+func (v *Embedded) UnmarshalJSON(data []byte) error {
+	return qjson.Unmarshal(data, v)
+}
 
 func TestJson(t *testing.T) {
 	var val = Struct{
 		A: Embedded{C: 10, D: "10"},
 		B: qtime.Time{Time: time.Now()},
 	}
-	var str, _ = json.MarshalIndent(val, "", "  ")
+	var str, _ = qjson.MarshalIndent(val, "", "  ")
 	fmt.Println(string(str))
 	val = Struct{}
 	if err := qjson.Unmarshal(str, &val); err != nil {

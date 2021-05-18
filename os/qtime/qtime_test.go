@@ -8,7 +8,7 @@ import (
 )
 
 func TestTime_JSON(t *testing.T) {
-	src := []byte("\"" + "2020-11-11T11:11:11+08:00" + "\"")
+	src := []byte(`"2020-11-11T11:11:11+08:00"`)
 	v := qtime.Time{}
 	if err := v.UnmarshalJSON(src); err != nil {
 		t.Error(err)

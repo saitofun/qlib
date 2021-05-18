@@ -3,27 +3,9 @@ package qbuilder
 import (
 	"go/ast"
 	"reflect"
+
+	"git.querycap.com/ss/lib/database"
 )
-
-type T interface {
-	TableName() string
-}
-
-type D interface {
-	DatabaseName() string
-}
-
-type C interface {
-	ColumnName() string
-}
-
-type Primary interface {
-	Primary() string // Primary primary field name
-}
-
-type PrimaryID interface {
-	PrimaryID() int // PrimaryID primary field id
-}
 
 type Schema struct {
 	Name         string
@@ -55,7 +37,7 @@ func Model(m interface{}) (ret *Schema) {
 	// TODO cache[mt.String()].EXISTED
 
 	mv := reflect.New(mt)
-	if t, ok := mv.Interface().(T); ok {
+	if t, ok := mv.Interface().(database.T); ok {
 		s.Table = t.TableName()
 	} else {
 		s.Table = NamingStrategy.TableName(mt.Name())
@@ -158,6 +140,44 @@ func (s *Schema) NewSelectDestSliceWithCap(cap int) reflect.Value {
 	return ret
 }
 
-func (s *Schema) ParseField(f reflect.StructField) *Field {
-	return nil
+func (s *Schema) ParseField(fs reflect.StructField) *Field {
+	f := &Field{
+		Name:         fs.Name,
+		Column:       "",
+		Schema:       s,
+		Tags:         ParseTags(fs.Tag, ","),
+		DataType:     "",
+		SQLType:      "",
+		Struct:       fs,
+		Type:         fs.Type,
+		IndirectType: fs.Type,
+	}
+	for f.IndirectType.Kind() == reflect.Ptr {
+		f.IndirectType = f.IndirectType.Elem()
+	}
+
+	fv := reflect.New(f.IndirectType)
+
+	if c, ok := fv.Interface().(database.C); ok {
+		f.Column = c.ColumnName()
+	} else {
+		if f.Column = f.Tags.ColumnName(); f.Column == "" {
+			f.Column = NamingStrategy.ColumnName(s.Table, f.Name)
+		}
+	}
+
+	if t, ok := fv.Interface().(database.SQLType); ok {
+		f.SQLType = t.SQLType("")
+	} else {
+		switch f.IndirectType.Kind() {
+		case reflect.Bool:
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		case reflect.Float32, reflect.Float64:
+		case reflect.String:
+		case reflect.Struct:
+		case reflect.Slice, reflect.Array:
+		}
+	}
+	return f
 }
