@@ -28,7 +28,7 @@ func NewTimedScheduler(fn func(), du time.Duration) Scheduler {
 
 func RunTimedScheduler(fn func(), du time.Duration) Scheduler {
 	ret := NewTimedScheduler(fn, du)
-	go ret.Run()
+	ret.Run()
 	return ret
 }
 
@@ -39,7 +39,7 @@ func (t *timed) WithContext(ctx context.Context) Scheduler {
 
 func (t *timed) Started() bool { return t.started.Val() }
 
-func (t *timed) Run() {
+func (t *timed) Start() {
 	if t.started.CAS(false, true) {
 		for {
 			select {
@@ -51,6 +51,8 @@ func (t *timed) Run() {
 		}
 	}
 }
+
+func (t *timed) Run() { go t.Start() }
 
 func (t *timed) Stop() {
 	t.cancel()

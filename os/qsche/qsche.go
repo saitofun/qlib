@@ -128,6 +128,7 @@ func (c *Context) Result() (interface{}, error) {
 }
 
 type Scheduler interface {
+	Start()
 	Run()
 	Started() bool
 	Stop()

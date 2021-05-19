@@ -25,7 +25,7 @@ func NewChainedScheduler(lmt ...int) WorkersScheduler {
 
 func RunChainedScheduler(lmt ...int) WorkersScheduler {
 	ret := NewChainedScheduler(lmt...)
-	go ret.Run()
+	ret.Run()
 	return ret
 }
 
@@ -34,7 +34,7 @@ func (c *chain) WithContext(ctx context.Context) Scheduler {
 	return c
 }
 
-func (c *chain) Run() {
+func (c *chain) Start() {
 	if c.started.CAS(false, true) {
 		for {
 			select {
@@ -48,6 +48,8 @@ func (c *chain) Run() {
 		}
 	}
 }
+
+func (c *chain) Run() { go c.Start() }
 
 func (c *chain) Started() bool { return c.started.Val() }
 

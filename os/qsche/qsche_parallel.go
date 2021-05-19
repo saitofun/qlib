@@ -28,7 +28,7 @@ func NewConScheduler(concurrency int) WorkersScheduler {
 
 func RunConScheduler(concurrency int) WorkersScheduler {
 	ret := NewConScheduler(concurrency)
-	go ret.Run()
+	ret.Run()
 	return ret
 }
 
@@ -65,7 +65,7 @@ func (c *concurrent) run() {
 
 func (c *concurrent) Started() bool { return c.started.Val() }
 
-func (c *concurrent) Run() {
+func (c *concurrent) Start() {
 	if c.started.CAS(false, true) {
 		if c.con == 0 {
 			c.run()
@@ -82,6 +82,8 @@ func (c *concurrent) Run() {
 		}
 	}
 }
+
+func (c *concurrent) Run() { go c.Start() }
 
 func (c *concurrent) Stop() {
 	c.cancel()
