@@ -195,7 +195,7 @@ func (s *Server) Serve() {
 			continue
 		}
 		if s.handler != nil {
-			s.worker.Add(qsche.NewFn(func() { s.handler(ev) }))
+			s.worker.Add(qsche.NewFnJob(func() { s.handler(ev) }))
 		}
 	}
 }

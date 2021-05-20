@@ -40,7 +40,7 @@ func (r *Routes) EventJobs(ev *Event) (ret []qsche.Job) {
 		return nil
 	}
 	for _, h := range handlers {
-		ret = append(ret, qsche.NewFn(func() { h(ev) }))
+		ret = append(ret, qsche.NewFnJob(func() { h(ev) }))
 	}
 	return ret
 }

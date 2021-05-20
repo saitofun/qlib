@@ -266,7 +266,7 @@ func (n *Node) recv() {
 					}
 				}
 				if n.handler != nil {
-					n.worker.Add(qsche.NewFn(func() { n.handler(&Event{n, msg}) }))
+					n.worker.Add(qsche.NewFnJob(func() { n.handler(&Event{n, msg}) }))
 					goto check
 				}
 				n.rq <- msg
