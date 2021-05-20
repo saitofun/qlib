@@ -11,44 +11,44 @@ type Job interface {
 	Do() (interface{}, error)
 }
 
-type Fn struct {
+type FnJob struct {
 	fn func()
 }
 
-func NewFn(fn func()) *Fn { return &Fn{fn} }
+func NewFn(fn func()) *FnJob { return &FnJob{fn} }
 
-func (f Fn) Do() (interface{}, error) {
+func (f FnJob) Do() (interface{}, error) {
 	f.fn()
 	return nil, nil
 }
 
-type FnWithErr struct {
+type FnWithErrJob struct {
 	fn func() error
 }
 
-func NewFnWithErr(fn func() error) *FnWithErr { return &FnWithErr{fn} }
+func NewFnWithErr(fn func() error) *FnWithErrJob { return &FnWithErrJob{fn} }
 
-func (f FnWithErr) Do() (interface{}, error) {
+func (f FnWithErrJob) Do() (interface{}, error) {
 	return nil, f.fn()
 }
 
-type FnWithVal struct {
+type FnWithValJob struct {
 	fn func() interface{}
 }
 
-func NewFnWithVal(fn func() interface{}) *FnWithVal { return &FnWithVal{fn} }
+func NewFnWithVal(fn func() interface{}) *FnWithValJob { return &FnWithValJob{fn} }
 
-func (f FnWithVal) Do() (interface{}, error) {
+func (f FnWithValJob) Do() (interface{}, error) {
 	return f.fn(), nil
 }
 
-type FnWithResult struct {
+type FnWithResultJob struct {
 	fn func() (interface{}, error)
 }
 
-func NewFnWithResult(fn func() (interface{}, error)) *FnWithResult { return &FnWithResult{fn} }
+func NewFnWithResult(fn func() (interface{}, error)) *FnWithResultJob { return &FnWithResultJob{fn} }
 
-func (f FnWithResult) Do() (interface{}, error) {
+func (f FnWithResultJob) Do() (interface{}, error) {
 	return f.fn()
 }
 
