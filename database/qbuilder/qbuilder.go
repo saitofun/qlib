@@ -5,7 +5,7 @@ type Query struct {
 	Args []interface{}
 }
 
-func Join(queries ...*Query) *Query {
+func JoinQueries(queries ...*Query) *Query {
 	ret := &Query{}
 	for _, q := range queries {
 		ret.Expr += q.Expr
