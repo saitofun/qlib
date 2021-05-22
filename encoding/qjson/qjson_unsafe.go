@@ -20,3 +20,7 @@ func UnsafeMarshalIndent(v interface{}) string {
 	ret, _ := MarshalIndent(v, "", "    ")
 	return encoding.BytesToStr(ret)
 }
+
+func UnmarshalString(content string, v interface{}) error {
+	return Unmarshal(encoding.StrToBytes(content), v)
+}
