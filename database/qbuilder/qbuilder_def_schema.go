@@ -10,6 +10,7 @@ import (
 
 type Schema struct {
 	Name         string
+	Database     string
 	Table        string
 	ModelRT      reflect.Type
 	ModelRV      reflect.Value
