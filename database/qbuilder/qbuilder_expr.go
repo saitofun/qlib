@@ -2,41 +2,30 @@ package qbuilder
 
 // Ex SQL Expressions
 type Ex interface {
-	Expr() []byte
+	Expr() string
 	Args() []interface{}
 }
 
-// raw Raw SQL Expression
-type raw struct {
-	expr []byte
-	args []interface{}
-}
-
-func NewRawEx(ex string, args ...interface{}) *raw {
-	return nil
-}
-
-func newRawEx(ex []byte, args ...interface{}) *raw {
-	return nil
-}
-
-func (r *raw) Expr() []byte {
-	return nil
-}
-
-func (r *raw) Args() []interface{} {
-	return r.args
-}
-
-type CondEx interface {
-	Ex
-	CondType() CondType
-}
-
 type expr struct {
-	expr []byte
+	expr string
 	args []interface{}
 }
 
-func (e *expr) Expr() []byte        { return e.expr }
+func (e *expr) Expr() string        { return e.expr }
 func (e *expr) Args() []interface{} { return e.args }
+
+type CondMarker interface {
+	condMarker()
+}
+
+type CondEx struct {
+	Ex
+	CondMarker
+}
+
+func AsCond(ex Ex) CondEx {
+	return struct {
+		Ex
+		CondMarker
+	}{Ex: ex}
+}

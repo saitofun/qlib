@@ -1,6 +1,7 @@
 package qbuilder
 
 import (
+	"errors"
 	"go/ast"
 	"reflect"
 
@@ -20,22 +21,25 @@ type Schema struct {
 	indexes      []*Field
 }
 
-func Model(m interface{}) (ret *Schema) {
-	s := &Schema{}
+var (
+	ErrSchemaModelNilInput        = errors.New("SchemaModelNilInput")
+	ErrSchemaModelUnsupportedType = errors.New("SchemaModelUnsupportedType")
+)
+
+func Model(m interface{}) (ret *Schema, err error) {
 	if m == nil {
-		return // TODO nil
+		return nil, ErrSchemaModelNilInput
 	}
 	mt := reflect.ValueOf(m).Type()
 	for mt.Kind() == reflect.Slice || mt.Kind() == reflect.Array || mt.Kind() == reflect.Ptr {
 		mt = mt.Elem()
 	}
 	if mt.Kind() != reflect.Struct {
-		return // TODO unsupported datatype
+		return nil, ErrSchemaModelUnsupportedType
 	}
-	s.ModelRT = mt
+	s := &Schema{ModelRT: mt}
 
 	// TODO cache[mt.String()].EXISTED
-
 	mv := reflect.New(mt)
 	if t, ok := mv.Interface().(database.T); ok {
 		s.Table = t.TableName()
@@ -50,7 +54,6 @@ func Model(m interface{}) (ret *Schema) {
 			s.fields = append(s.fields, s.ParseField(fs))
 		}
 	}
-
 	ret = s
 	return
 }
@@ -68,7 +71,7 @@ func (s *Schema) Field(i int) *Field { return s.fields[i] }
 func (s *Schema) FieldByName(name string) *Field { return s.nameFields[name] }
 
 // FieldByColumn return *Field by column name
-func (s *Schema) FieldByColumn(col string) *Field { return s.columnFields[col] }
+func (s *Schema) FieldByCol(col string) *Field { return s.columnFields[col] }
 
 // LookupField return *Field by column name or StructField name
 func (s *Schema) LookupField(name string) *Field {
@@ -181,3 +184,24 @@ func (s *Schema) ParseField(fs reflect.StructField) *Field {
 	}
 	return f
 }
+
+// ArgsEx argument list expression: eg (?,?,...)
+func (s *Schema) ArgsEx() string { return "" }
+
+// AssignEx assignment list expression: eg: f_a=?,f_b=?,...
+func (s *Schema) AssignEx() string { return "" }
+
+// ColumnsEx column list expression: eg (f_a,f_b,...)
+func (s *Schema) ColumnsEx() string { return "" }
+
+// Insert insert SQL query: INSERT INTO t_tab (f_a,f_b,...) VALUES (?,?,..);
+func (s *Schema) Insert(m ...interface{}) Ex { return nil }
+
+// Update update by primary SQL query: UPDATE t_tab SET f_a=?,f_b=?,... WHERE f_a=? AND f_b<?...
+func (s *Schema) Update(m interface{}, cond ...Cond) Ex { return nil }
+
+// Delete delete by primary SQL query: DELETE FROM t_tab WHERE f_id=?
+func (s *Schema) Delete(m interface{}, cond ...Cond) Ex { return nil }
+
+// Select select by primary SQL query: SELECT * FROM t_tab WHERE f_a=? AND f_b>?...
+func (s *Schema) Select(m interface{}, cond ...Cond) Ex { return nil }
