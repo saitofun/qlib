@@ -31,3 +31,4 @@ func (f *Field) Database() string {
 
 func (f *Field) ColumnName() string       { return f.Column }
 func (f *Field) QuotedColumnName() string { return fmt.Sprintf("`%s`.`%s`", f.Schema.Table, f.Column) }
+

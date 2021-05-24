@@ -6,6 +6,10 @@ type Ex interface {
 	Args() []interface{}
 }
 
+func AsExpr(ex string, args ...interface{}) Ex {
+	return &expr{ex, args}
+}
+
 type expr struct {
 	expr string
 	args []interface{}
@@ -18,7 +22,7 @@ type CondMarker interface {
 	condMarker()
 }
 
-type CondEx struct {
+type CondEx interface {
 	Ex
 	CondMarker
 }
@@ -28,4 +32,9 @@ func AsCond(ex Ex) CondEx {
 		Ex
 		CondMarker
 	}{Ex: ex}
+}
+
+type Assignment interface {
+	Ex
+	// AssignmentMarker
 }

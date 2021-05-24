@@ -71,7 +71,7 @@ func (s *Schema) Field(i int) *Field { return s.fields[i] }
 // FieldByName return *Field by StructField name
 func (s *Schema) FieldByName(name string) *Field { return s.nameFields[name] }
 
-// FieldByColumn return *Field by column name
+// FieldByCol return *Field by column name
 func (s *Schema) FieldByCol(col string) *Field { return s.columnFields[col] }
 
 // LookupField return *Field by column name or StructField name
