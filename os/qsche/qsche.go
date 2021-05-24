@@ -2,6 +2,7 @@ package qsche
 
 import (
 	"context"
+	"sync"
 	"time"
 )
 
@@ -52,6 +53,7 @@ type Scheduler interface {
 	Run()
 	Started() bool
 	Stop()
+	Context() context.Context
 	WithContext(ctx context.Context) Scheduler
 }
 
@@ -61,4 +63,24 @@ type WorkersScheduler interface {
 	Add(Job) *Context
 	AddWithDeadline(Job, time.Time) *Context
 	AddWithTimeout(Job, time.Duration) *Context
+	WaitGroup(...Job) []*Context
+}
+
+func WaitGroup(sche WorkersScheduler, jobs ...Job) (ret []*Context) {
+	wg := &sync.WaitGroup{}
+	for _, j := range jobs {
+		select {
+		case <-sche.Context().Done():
+		default:
+			go func(j Job) {
+				wg.Add(1)
+				ctx := sche.Add(j)
+				<-ctx.Done()
+				ret = append(ret, ctx)
+				wg.Done()
+			}(j)
+		}
+	}
+	wg.Done()
+	return
 }

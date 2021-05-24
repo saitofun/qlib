@@ -32,6 +32,8 @@ func RunConScheduler(concurrency int) WorkersScheduler {
 	return ret
 }
 
+func (c *concurrent) Context() context.Context { return c.ctx }
+
 func (c *concurrent) WithContext(ctx context.Context) Scheduler {
 	c.ctx, c.cancel = context.WithCancel(ctx)
 	return c
@@ -88,4 +90,8 @@ func (c *concurrent) Run() { go c.Start() }
 func (c *concurrent) Stop() {
 	c.cancel()
 	c.Workers.Close()
+}
+
+func (c *concurrent) WaitGroup(jobs ...Job) []*Context {
+	return WaitGroup(c, jobs...)
 }

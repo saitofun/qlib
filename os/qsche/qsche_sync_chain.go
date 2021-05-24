@@ -29,6 +29,8 @@ func RunChainedScheduler(lmt ...int) WorkersScheduler {
 	return ret
 }
 
+func (c *chain) Context() context.Context { return c.ctx }
+
 func (c *chain) WithContext(ctx context.Context) Scheduler {
 	c.ctx, c.cancel = context.WithCancel(ctx)
 	return c
@@ -56,4 +58,8 @@ func (c *chain) Started() bool { return c.started.Val() }
 func (c *chain) Stop() {
 	c.cancel()
 	c.Workers.Close()
+}
+
+func (c *chain) WaitGroup(jobs ...Job) []*Context {
+	return WaitGroup(c, jobs...)
 }

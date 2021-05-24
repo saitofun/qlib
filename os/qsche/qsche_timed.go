@@ -32,6 +32,8 @@ func RunTimedScheduler(fn func(), du time.Duration) Scheduler {
 	return ret
 }
 
+func (t *timed) Context() context.Context { return t.ctx }
+
 func (t *timed) WithContext(ctx context.Context) Scheduler {
 	t.ctx, t.cancel = context.WithCancel(ctx)
 	return t
