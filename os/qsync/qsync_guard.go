@@ -15,3 +15,15 @@ func (g *guard) Do(f func()) {
 func Guard(mutex *sync.Mutex) *guard {
 	return &guard{mutex}
 }
+
+type group struct {
+	*sync.WaitGroup
+}
+
+func (g *group) Do(f func()) {
+	go func() {
+		g.Add(1)
+		f()
+		g.Done()
+	}()
+}
