@@ -68,6 +68,7 @@ type WorkersScheduler interface {
 
 func WaitGroup(sche WorkersScheduler, jobs ...Job) (ret []*Context) {
 	wg := &sync.WaitGroup{}
+	ch := make(chan *Context, len(jobs))
 	for _, j := range jobs {
 		select {
 		case <-sche.Context().Done():
@@ -75,12 +76,15 @@ func WaitGroup(sche WorkersScheduler, jobs ...Job) (ret []*Context) {
 			go func(j Job) {
 				wg.Add(1)
 				ctx := sche.Add(j)
+				ch <- ctx
 				<-ctx.Done()
-				ret = append(ret, ctx)
 				wg.Done()
 			}(j)
 		}
 	}
 	wg.Wait()
+	for c := range ch {
+		ret = append(ret, c)
+	}
 	return
 }
