@@ -46,7 +46,7 @@ var FieldCondCache = struct {
 	mtx: &sync.Mutex{},
 }
 
-func FieldCondExpr(f *Field, t CondType, arg ...interface{}) *CondEx {
+func FieldCondExpr(f *Field, t CondType, arg ...interface{}) CondEx {
 	qsync.Guard(FieldCondCache.mtx).Do(func() {
 		if len(FieldCondCache.val) == 0 {
 
@@ -62,10 +62,5 @@ func FieldCondExpr(f *Field, t CondType, arg ...interface{}) *CondEx {
 	case CondLIKE, CondLLIKE, CondRLIKE:
 	case CondIN:
 	}
-	return &CondEx{
-		Ex: &expr{
-			expr: ``,
-			args: ArgList(arg...),
-		},
-	}
+	return AsCond(nil)
 }
