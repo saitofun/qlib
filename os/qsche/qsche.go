@@ -84,8 +84,8 @@ func WaitGroup(sche WorkersScheduler, jobs ...Job) (ret []*Context) {
 		}
 	}
 	wg.Wait()
-	for c := range ch {
-		ret = append(ret, c)
+	for i := 0; i < len(jobs); i++ {
+		ret = append(ret, <-ch)
 	}
 	return
 }
