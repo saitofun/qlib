@@ -4,6 +4,8 @@ import (
 	"context"
 	"sync"
 	"time"
+
+	"git.querycap.com/ss/lib/os/qsync"
 )
 
 type FnJob struct{ fn Fn }
@@ -67,20 +69,18 @@ type WorkersScheduler interface {
 }
 
 func WaitGroup(sche WorkersScheduler, jobs ...Job) (ret []*Context) {
-	wg := &sync.WaitGroup{}
 	ch := make(chan *Context, len(jobs))
-	for _, j := range jobs {
+	wg := &sync.WaitGroup{}
+	for i := range jobs {
 		select {
 		case <-sche.Context().Done():
 			return nil
 		default:
-			go func(j Job) {
-				wg.Add(1)
-				ctx := sche.Add(j)
+			qsync.Group(wg).Do(func() {
+				ctx := sche.Add(jobs[i])
 				ch <- ctx
 				<-ctx.Done()
-				wg.Done()
-			}(j)
+			})
 		}
 	}
 	wg.Wait()

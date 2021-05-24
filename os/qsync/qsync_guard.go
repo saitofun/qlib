@@ -16,14 +16,6 @@ func Guard(mutex *sync.Mutex) *guard {
 	return &guard{mutex}
 }
 
-type group struct {
-	*sync.WaitGroup
-}
-
-func (g *group) Do(f func()) {
-	go func() {
-		g.Add(1)
-		f()
-		g.Done()
-	}()
+func GuardDo(mutex *sync.Mutex, f func()) {
+	(&guard{mutex}).Do(f)
 }

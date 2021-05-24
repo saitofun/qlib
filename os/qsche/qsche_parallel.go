@@ -2,9 +2,9 @@ package qsche
 
 import (
 	"context"
-	"sync"
 
 	"git.querycap.com/ss/lib/container/qtype"
+	"git.querycap.com/ss/lib/os/qsync"
 )
 
 type concurrent struct {
@@ -72,15 +72,11 @@ func (c *concurrent) Start() {
 		if c.con == 0 {
 			c.run()
 		} else {
-			wg := sync.WaitGroup{}
+			workers := make([]func(), 0, c.con)
 			for i := 0; i < c.con; i++ {
-				go func() {
-					wg.Add(1)
-					c.routine()
-					wg.Done()
-				}()
+				workers = append(workers, c.routine)
 			}
-			wg.Wait()
+			qsync.GroupDoMany(workers...)
 		}
 	}
 }
