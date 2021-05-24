@@ -72,6 +72,7 @@ func WaitGroup(sche WorkersScheduler, jobs ...Job) (ret []*Context) {
 	for _, j := range jobs {
 		select {
 		case <-sche.Context().Done():
+			return nil
 		default:
 			go func(j Job) {
 				wg.Add(1)
