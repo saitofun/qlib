@@ -81,6 +81,6 @@ func WaitGroup(sche WorkersScheduler, jobs ...Job) (ret []*Context) {
 			}(j)
 		}
 	}
-	wg.Done()
+	wg.Wait()
 	return
 }
