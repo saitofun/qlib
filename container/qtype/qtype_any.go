@@ -26,6 +26,9 @@ func (i *Any) Clone() *Any {
 }
 
 func (i *Any) Val() interface{} {
+	if i == nil {
+		return nil
+	}
 	return i.v.Load()
 }
 
