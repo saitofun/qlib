@@ -20,6 +20,7 @@ func NewContext(j Job) *Context {
 	ret := &Context{
 		Job:    j,
 		result: make(chan *Result, 1),
+		res:    &Result{},
 		done:   make(chan struct{}, 1),
 	}
 	ret.Stages[0] = qtime.Now()
