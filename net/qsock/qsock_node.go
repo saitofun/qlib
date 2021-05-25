@@ -20,18 +20,15 @@ type NodeTask struct {
 }
 
 type Node struct {
-	c       net.Conn
-	addr    net.Addr
-	rb      qbuf.Buffer
-	wb      qbuf.Buffer
-	rq      chan qmsg.Message
-	sq      chan qmsg.Message
-	binder  *Binder
-	routes  *Routes
-	handler Handler
-	parser  qmsg.Parser
-	worker  qsche.WorkersScheduler
-
+	c         net.Conn
+	addr      net.Addr
+	rb, wb    qbuf.Buffer
+	rq, sq    chan qmsg.Message
+	binder    *Binder
+	routes    *Routes // routes  register qmsg.Type and Handler high priority
+	handler   Handler // handler register global message handle func low priority
+	parser    qmsg.Parser
+	worker    qsche.WorkersScheduler
 	id        string
 	ctx       context.Context
 	cancel    context.CancelFunc
@@ -53,24 +50,19 @@ func NewNode() *Node {
 	return ret
 }
 
-func (n *Node) ID() string {
-	return n.id
-}
+func (n *Node) ID() string { return n.id }
 
-func (n *Node) Context() context.Context {
-	return n.ctx
-}
+func (n *Node) Context() context.Context { return n.ctx }
 
-func (n *Node) SetQueues(r, s chan qmsg.Message) {
-	n.rq, n.sq = r, s
-}
+func (n *Node) SetQueues(r, s chan qmsg.Message) { n.rq, n.sq = r, s }
 
-func (n *Node) SetParser(parser qmsg.Parser) {
-	n.parser = parser
-}
+func (n *Node) SetParser(parser qmsg.Parser) { n.parser = parser }
 
-func (n *Node) SetBuffers(r, w qbuf.Buffer) {
-	n.rb, n.wb = r, w
+func (n *Node) SetBuffers(r, w qbuf.Buffer) { n.rb, n.wb = r, w }
+
+func (n *Node) WithContext(ctx context.Context) *Node {
+	n.ctx, n.cancel = context.WithCancel(ctx)
+	return n
 }
 
 // ReadMessage read message from receive channel
@@ -126,12 +118,12 @@ func (n *Node) SendMessage(msg qmsg.Message) (err error) {
 }
 
 // Request request message to peer until timeout or responded
-func (n *Node) Request(req qmsg.Message, d time.Duration) (rsp qmsg.Message, err error) {
+func (n *Node) Request(req qmsg.Message, d time.Duration) (qmsg.Message, error) {
 	if n.closed {
 		return nil, ENodeClosed
 	}
 	n.binder.New(req.ID())
-	if err = n.WriteMessage(req); err != nil {
+	if err := n.WriteMessage(req); err != nil {
 		n.binder.Remove(req.ID())
 		return nil, err
 	}
@@ -178,13 +170,13 @@ func (n *Node) StopReason() string { return n.reason }
 
 // Run start Node writing and reading
 func (n *Node) Run() {
-	go n.recv()
+	if n.protocol != ProtocolUDP {
+		go n.recv()
+	}
 	go n.send()
 }
 
-func (n *Node) RunUDP() {
-	go n.send()
-}
+func (n *Node) RunUDP() { go n.send() }
 
 func (n *Node) send() {
 	var (
@@ -257,16 +249,14 @@ func (n *Node) recv() {
 				if n.binder.Push(msg) {
 					goto check
 				}
-				if n.routes != nil {
-					if jobs := n.routes.EventJobs(&Event{n, msg}); len(jobs) > 0 {
-						for i := range jobs {
-							n.worker.Add(jobs[i])
-						}
-						goto check
+				if handlers := n.routes.Handlers(msg.Type()); len(handlers) > 0 {
+					for _, handler := range handlers {
+						n.worker.Add(HandlerFunc(handler, &Event{n, msg}))
 					}
+					goto check
 				}
 				if n.handler != nil {
-					n.worker.Add(qsche.NewFnJob(func() { n.handler(&Event{n, msg}) }))
+					n.worker.Add(HandlerFunc(n.handler, &Event{n, msg}))
 					goto check
 				}
 				n.rq <- msg

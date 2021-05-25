@@ -5,42 +5,34 @@ import (
 
 	"git.querycap.com/ss/lib/net/qsock/qmsg"
 	"git.querycap.com/ss/lib/os/qsche"
-	"git.querycap.com/ss/lib/os/qsync"
 )
 
-type (
-	Handler = func(*Event)
-	Job     = func()
-)
+type Handler func(*Event)
+
+func HandlerFunc(h Handler, ev *Event) qsche.Fn { return func() { h(ev) } }
+
+type Job func()
 
 type Routes struct {
 	mu *sync.Mutex
-	v  map[string][]Handler
+	v  map[qmsg.Type][]Handler
 }
 
 func NewRoutes() *Routes {
 	return &Routes{
 		mu: &sync.Mutex{},
-		v:  make(map[string][]Handler),
+		v:  make(map[qmsg.Type][]Handler),
 	}
 }
 
 func (r *Routes) Register(t qmsg.Type, fns ...Handler) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.v[t.String()] = append(r.v[t.String()], fns...)
+	r.v[t] = append(r.v[t], fns...)
 }
 
-func (r *Routes) EventJobs(ev *Event) (ret []qsche.Job) {
-	var handlers []Handler
-	qsync.Guard(r.mu).Do(func() {
-		handlers = r.v[ev.Payload().Type().String()]
-	})
-	if len(handlers) == 0 {
-		return nil
-	}
-	for _, h := range handlers {
-		ret = append(ret, qsche.NewFnJob(func() { h(ev) }))
-	}
-	return ret
+func (r *Routes) Handlers(t qmsg.Type) []Handler {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.v[t]
 }

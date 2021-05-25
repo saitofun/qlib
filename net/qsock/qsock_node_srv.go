@@ -93,7 +93,7 @@ func (s *Server) buffers() (qbuf.Buffer, qbuf.Buffer) {
 	return qbuf_packet.New(s.readBufferCap), qbuf_packet.New(s.writeBufferCap)
 }
 
-func (s *Server) node(conn net.Conn, addr net.Addr) *Node {
+func (s *Server) newNode(conn net.Conn, addr net.Addr) *Node {
 	n := NewNode()
 	n.rq = make(chan qmsg.Message, 1024)
 	n.sq = make(chan qmsg.Message, 1024)
@@ -108,10 +108,8 @@ func (s *Server) node(conn net.Conn, addr net.Addr) *Node {
 		n.id = strconv.Itoa(s.seq)
 		s.seq++
 	}
-	if s.protocol == ProtocolUDP {
-		n.RunUDP()
-	} else {
-		n.Run()
+	n.Run()
+	if n.protocol != ProtocolUDP {
 		for _, f := range s.onConnected {
 			f(n)
 		}
@@ -135,7 +133,7 @@ func (s *Server) run() {
 				fmt.Printf("option: %v\n", err)
 				continue
 			}
-			n := s.node(conn, nil)
+			n := s.newNode(conn, nil)
 			fmt.Printf("client: %v connected\n", n.id)
 		}
 	} else {
@@ -158,8 +156,8 @@ func (s *Server) run() {
 			}
 			n = s.mgr.Get(addr.String())
 			if n == nil {
-				n = s.node(s.udp, addr)
-				fmt.Printf("client: %v node created\n", n.id)
+				n = s.newNode(s.udp, addr)
+				fmt.Printf("client: %v newNode created\n", n.id)
 			}
 			if err = n.rb.ResetAndWrite(buf[0:size]); err != nil {
 				continue
@@ -172,13 +170,9 @@ func (s *Server) run() {
 	}
 }
 
-func (s *Server) Clients() *clients {
-	return s.mgr
-}
+func (s *Server) Clients() *clients { return s.mgr }
 
-func (s *Server) ReceiveEvent() *Event {
-	return <-s.mgr.events
-}
+func (s *Server) ReceiveEvent() *Event { return <-s.mgr.events }
 
 func (s *Server) Serve() {
 	if s.routes == nil && s.handler == nil {
@@ -186,16 +180,14 @@ func (s *Server) Serve() {
 	}
 	for {
 		ev := s.ReceiveEvent()
-		if s.routes != nil {
-			if jobs := s.routes.EventJobs(ev); len(jobs) > 0 {
-				for _, j := range jobs {
-					s.worker.Add(j)
-				}
+		if handlers := s.routes.Handlers(ev.payload.Type()); len(handlers) > 0 {
+			for _, h := range handlers {
+				s.worker.Add(HandlerFunc(h, ev))
 			}
 			continue
 		}
 		if s.handler != nil {
-			s.worker.Add(qsche.NewFnJob(func() { s.handler(ev) }))
+			s.worker.Add(HandlerFunc(s.handler, ev))
 		}
 	}
 }

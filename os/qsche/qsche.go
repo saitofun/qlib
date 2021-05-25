@@ -8,55 +8,24 @@ import (
 	"git.querycap.com/ss/lib/os/qsync"
 )
 
-type (
-	Fn        func()
-	FnWithErr func() error
-)
+type Fn func()
 
-// FnJob job: func()
-type FnJob struct {
-	id string
-	fn Fn
-}
+func (f Fn) Do() (interface{}, error) { f(); return nil, nil }
 
-func NewFnJob(f Fn, id ...string) *FnJob  { return &FnJob{"", f} }
-func (f *FnJob) Do() (interface{}, error) { f.fn(); return nil, nil }
-func (f *FnJob) WithID(id string) *FnJob  { f.id = id; return f }
+type FnWithErr func() error
 
-// FnWithErrJob job: func() error
-type FnWithErrJob struct {
-	id string
-	fn FnWithErr
-}
+func (f FnWithErr) Do() (interface{}, error) { return nil, f() }
 
-func NewFnWithErrJob(f FnWithErr, id ...string) *FnWithErrJob {
-	return &FnWithErrJob{"", f}
-}
+type FnWithVal func() interface{}
 
-func (f *FnWithErrJob) Do() (interface{}, error)       { return nil, f.fn() }
-func (f *FnWithErrJob) WithID(id string) *FnWithErrJob { f.id = id; return f }
+func (f FnWithVal) Do() (interface{}, error) { return f(), nil }
+
+type FnWithRes func() (interface{}, error)
+
+func (f FnWithRes) Do() (interface{}, error) { return f() }
 
 // Job sche schedule unit
 type Job interface{ Do() (interface{}, error) }
-
-type NamedJob interface {
-	Job
-	Name() string
-}
-
-type NamedJobWithStat interface {
-	NamedJob
-	statisticMarker()
-}
-
-type statistic interface{ statisticMarker() }
-
-func AsNamedJobWithStat(j NamedJob) NamedJobWithStat {
-	return &struct {
-		NamedJob
-		statistic
-	}{NamedJob: j}
-}
 
 // Result job result
 type Result struct {
@@ -83,6 +52,7 @@ type WorkersScheduler interface {
 	WaitGroup(...Job) []*Context
 }
 
+// WaitGroup for batch commit jobs
 func WaitGroup(sche WorkersScheduler, jobs ...Job) (ret []*Context) {
 	ch := make(chan *Context, len(jobs))
 	wg := &sync.WaitGroup{}

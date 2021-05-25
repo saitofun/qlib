@@ -25,5 +25,5 @@ func (ev *Event) Send(msg qmsg.Message) error {
 	return ev.node.SendMessage(msg)
 }
 
-// for trace only
+// Endpoint for trace only
 func (ev *Event) Endpoint() *Node { return ev.node }
