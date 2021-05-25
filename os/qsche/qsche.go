@@ -8,40 +8,55 @@ import (
 	"git.querycap.com/ss/lib/os/qsync"
 )
 
-type FnJob struct{ fn Fn }
+type (
+	Fn        func()
+	FnWithErr func() error
+)
 
-type Fn func()
+// FnJob job: func()
+type FnJob struct {
+	id string
+	fn Fn
+}
 
-func NewFnJob(f Fn) *FnJob { return &FnJob{f} }
+func NewFnJob(f Fn, id ...string) *FnJob  { return &FnJob{"", f} }
+func (f *FnJob) Do() (interface{}, error) { f.fn(); return nil, nil }
+func (f *FnJob) WithID(id string) *FnJob  { f.id = id; return f }
 
-func (f FnJob) Do() (interface{}, error) { f.fn(); return nil, nil }
+// FnWithErrJob job: func() error
+type FnWithErrJob struct {
+	id string
+	fn FnWithErr
+}
 
-type FnWithErrJob struct{ fn FnWithErr }
+func NewFnWithErrJob(f FnWithErr, id ...string) *FnWithErrJob {
+	return &FnWithErrJob{"", f}
+}
 
-type FnWithErr func() error
-
-func NewFnWithErrJob(f FnWithErr) *FnWithErrJob { return &FnWithErrJob{f} }
-
-func (f FnWithErrJob) Do() (interface{}, error) { return nil, f.fn() }
-
-type FnWithValJob struct{ fn FnWithVal }
-
-type FnWithVal func() interface{}
-
-func NewFnWithValJob(f FnWithVal) *FnWithValJob { return &FnWithValJob{f} }
-
-func (f FnWithValJob) Do() (interface{}, error) { return f.fn(), nil }
-
-type FnWithResultJob struct{ fn FnWithResult }
-
-type FnWithResult func() (interface{}, error)
-
-func NewFnWithResultJob(fn func() (interface{}, error)) *FnWithResultJob { return &FnWithResultJob{fn} }
-
-func (f FnWithResultJob) Do() (interface{}, error) { return f.fn() }
+func (f *FnWithErrJob) Do() (interface{}, error)       { return nil, f.fn() }
+func (f *FnWithErrJob) WithID(id string) *FnWithErrJob { f.id = id; return f }
 
 // Job sche schedule unit
 type Job interface{ Do() (interface{}, error) }
+
+type NamedJob interface {
+	Job
+	Name() string
+}
+
+type NamedJobWithStat interface {
+	NamedJob
+	statisticMarker()
+}
+
+type statistic interface{ statisticMarker() }
+
+func AsNamedJobWithStat(j NamedJob) NamedJobWithStat {
+	return &struct {
+		NamedJob
+		statistic
+	}{NamedJob: j}
+}
 
 // Result job result
 type Result struct {
