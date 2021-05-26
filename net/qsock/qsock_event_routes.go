@@ -26,12 +26,18 @@ func NewRoutes() *Routes {
 }
 
 func (r *Routes) Register(t qmsg.Type, fns ...Handler) {
+	if r == nil {
+		return
+	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.v[t] = append(r.v[t], fns...)
 }
 
 func (r *Routes) Handlers(t qmsg.Type) []Handler {
+	if r == nil {
+		return nil
+	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	return r.v[t]
