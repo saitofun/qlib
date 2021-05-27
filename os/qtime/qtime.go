@@ -32,6 +32,8 @@ type Time struct {
 	time.Time
 }
 
+func NewTime() *Time { return &Time{time.Now()} }
+
 func (t Time) String() string {
 	if t.IsZero() {
 		return ""

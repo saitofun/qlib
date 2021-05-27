@@ -27,7 +27,7 @@ func (f FnWithRes) Do() (interface{}, error) { return f() }
 // Job sche schedule unit
 type Job interface{ Do() (interface{}, error) }
 
-// Result job result
+// Result job resc
 type Result struct {
 	Val interface{}
 	error

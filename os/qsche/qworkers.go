@@ -24,21 +24,18 @@ func NewWorkers(lmt ...int) *Workers {
 func (p *Workers) Add(j Job) (ctx *Context) {
 	ctx = NewContext(j)
 	p.q.Push(ctx)
-	ctx.Stages[1] = qtime.Now()
 	return ctx
 }
 
 func (p *Workers) AddWithDeadline(j Job, deadline time.Time) (ctx *Context) {
 	ctx = NewContext(j)
 	p.q.Push(ctx.WithDeadline(deadline))
-	ctx.Stages[1] = qtime.Now()
 	return ctx
 }
 
 func (p *Workers) AddWithTimeout(j Job, timeout time.Duration) (ctx *Context) {
 	ctx = NewContext(j)
 	p.q.Push(ctx.WithTimeout(timeout))
-	ctx.Stages[1] = qtime.Now()
 	return ctx
 }
 
@@ -47,6 +44,7 @@ func (p *Workers) Pop() *Context {
 	if ctx == nil {
 		return nil
 	}
+	ctx.(*Context).stat[1] = qtime.NewTime()
 	return ctx.(*Context)
 }
 

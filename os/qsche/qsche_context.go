@@ -8,22 +8,22 @@ import (
 )
 
 type Context struct {
-	Stages   [4]qtime.Time // Stages: commit,committed,execute,finished
-	deadline *qtime.Time
-	result   chan *Result
-	res      *Result
-	done     chan struct{}
+	stat                   // stat commit,committed,execute,finished
+	deadline *qtime.Time   // deadline context deadline
+	resc     chan *Result  // resc result chan
+	res      *Result       // res result
+	done     chan struct{} // done context done chan
 	Job
 }
 
 func NewContext(j Job) *Context {
 	ret := &Context{
-		Job:    j,
-		result: make(chan *Result, 1),
-		res:    &Result{},
-		done:   make(chan struct{}, 1),
+		Job:  j,
+		resc: make(chan *Result, 1),
+		res:  &Result{},
+		done: make(chan struct{}, 1),
 	}
-	ret.Stages[0] = qtime.Now()
+	ret.stat[0] = qtime.NewTime()
 	return ret
 }
 
@@ -54,11 +54,10 @@ func (c *Context) Exec(ctx context.Context) {
 	case <-ctx.Done():
 		c.res.error = ctx.Err()
 	default:
-		c.Stages[2] = qtime.Now()
 		c.res = &Result{}
 		c.res.Val, c.res.error = c.Job.Do()
-		c.Stages[3] = qtime.Now()
-		c.result <- c.res
+		c.stat[2] = qtime.NewTime()
+		c.resc <- c.res
 	}
 	c.done <- struct{}{}
 }
@@ -69,11 +68,42 @@ func (c *Context) WithDeadline(deadline time.Time) *Context {
 }
 
 func (c *Context) WithTimeout(timeout time.Duration) *Context {
-	c.deadline = &qtime.Time{Time: c.Stages[0].Add(timeout)}
+	c.deadline = &qtime.Time{Time: c.stat[0].Add(timeout)}
 	return c
 }
 
 func (c *Context) Result() (interface{}, error) {
-	r := <-c.result
+	r := <-c.resc
 	return r.Val, r.error
 }
+
+// stat 0 commit 1 scheduled 3 done
+type stat [3]*qtime.Time
+
+// Latency sub committed and commit
+func (s *stat) Latency() time.Duration {
+	if s[0] != nil && s[1] != nil {
+		return s[2].Time.Sub(s[0].Time)
+	}
+	return -1
+}
+
+// Cost sub done and scheduled
+func (s *stat) Cost() time.Duration {
+	if s[1] != nil && s[2] != nil {
+		return s[2].Time.Sub(s[1].Time)
+
+	}
+	return -1
+}
+
+// Total sub commit and
+func (s *stat) Total() time.Duration {
+	if s[0] != nil && s[2] != nil {
+		return s[2].Time.Sub(s[0].Time)
+
+	}
+	return -1
+}
+
+func (s *stat) Stat() *stat { return s }
