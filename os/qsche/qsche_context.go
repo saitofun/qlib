@@ -106,4 +106,6 @@ func (s *stat) Total() time.Duration {
 	return -1
 }
 
-func (s *stat) Stat() *stat { return s }
+func (s *stat) Stat() [2]int64 {
+	return [2]int64{s.Latency().Milliseconds(), s.Cost().Milliseconds()}
+}
