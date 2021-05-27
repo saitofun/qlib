@@ -83,7 +83,7 @@ type stat [3]*qtime.Time
 // Latency sub committed and commit
 func (s *stat) Latency() time.Duration {
 	if s[0] != nil && s[1] != nil {
-		return s[2].Time.Sub(s[0].Time)
+		return s[1].Time.Sub(s[0].Time)
 	}
 	return -1
 }
