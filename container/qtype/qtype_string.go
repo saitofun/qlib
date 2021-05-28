@@ -50,3 +50,7 @@ func (s *String) UnmarshalJSON(v []byte) error {
 	s.Set(encoding.BytesToStr(v))
 	return nil
 }
+
+type Stringer interface {
+	String() string
+}
