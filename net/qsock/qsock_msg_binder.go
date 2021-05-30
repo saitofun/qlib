@@ -9,13 +9,13 @@ import (
 
 type Binder struct {
 	*sync.Mutex
-	mapping map[qmsg.ID]chan qmsg.Message
+	mapping map[string]chan qmsg.Message
 }
 
 func NewBinder() *Binder {
 	return &Binder{
 		Mutex:   &sync.Mutex{},
-		mapping: make(map[qmsg.ID]chan qmsg.Message),
+		mapping: make(map[string]chan qmsg.Message),
 	}
 }
 
@@ -23,10 +23,10 @@ func (b *Binder) New(id qmsg.ID) {
 	b.Lock()
 	defer b.Unlock()
 
-	b.mapping[id] = make(chan qmsg.Message, 1)
+	b.mapping[id.String()] = make(chan qmsg.Message, 1)
 }
 
-func (b *Binder) get(id qmsg.ID) <-chan qmsg.Message {
+func (b *Binder) get(id string) <-chan qmsg.Message {
 	b.Lock()
 	defer b.Unlock()
 
@@ -36,7 +36,7 @@ func (b *Binder) get(id qmsg.ID) <-chan qmsg.Message {
 	return nil
 }
 
-func (b *Binder) del(id qmsg.ID) {
+func (b *Binder) del(id string) {
 	b.Lock()
 	defer b.Unlock()
 
@@ -48,7 +48,7 @@ func (b *Binder) del(id qmsg.ID) {
 func (b *Binder) Push(msg qmsg.Message) bool {
 	b.Lock()
 	defer b.Unlock()
-	if c, ok := b.mapping[msg.ID()]; ok && c != nil {
+	if c, ok := b.mapping[msg.ID().String()]; ok && c != nil {
 		c <- msg
 		return true
 	}
@@ -56,9 +56,9 @@ func (b *Binder) Push(msg qmsg.Message) bool {
 }
 
 func (b *Binder) Wait(id qmsg.ID, d time.Duration) (qmsg.Message, error) {
-	defer b.del(id)
+	defer b.del(id.String())
 
-	c := b.get(id)
+	c := b.get(id.String())
 	if c == nil {
 		return nil, EMessageUnbound
 	}
@@ -72,7 +72,7 @@ func (b *Binder) Wait(id qmsg.ID, d time.Duration) (qmsg.Message, error) {
 }
 
 func (b *Binder) Remove(id qmsg.ID) {
-	b.del(id)
+	b.del(id.String())
 }
 
 func (b *Binder) Reset() {
