@@ -1,6 +1,6 @@
 package qbuilder
 
-import "git.querycap.com/ss/lib/os/qtime"
+import "github.com/saitofun/qlib/os/qtime"
 
 type OperationTime struct {
 	CreatedAt qtime.Time `db:"f_created_at,default='0'" json:"createdAt" `

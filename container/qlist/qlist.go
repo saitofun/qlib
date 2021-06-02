@@ -5,9 +5,9 @@ import (
 	"container/list"
 	"sync"
 
-	"git.querycap.com/ss/lib/encoding/qconv"
-	"git.querycap.com/ss/lib/encoding/qjson"
-	"git.querycap.com/ss/lib/internal/rwmutex"
+	"github.com/saitofun/qlib/encoding/qconv"
+	"github.com/saitofun/qlib/encoding/qjson"
+	"github.com/saitofun/qlib/internal/rwmutex"
 )
 
 type Element = list.Element

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"git.querycap.com/ss/lib/net/qsock"
+	"github.com/saitofun/qlib/net/qsock"
 )
 
 func TestTCPServer(t *testing.T) {

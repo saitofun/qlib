@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"git.querycap.com/ss/lib/os/qtime"
+	"github.com/saitofun/qlib/os/qtime"
 )
 
 type Context struct {

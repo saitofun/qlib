@@ -4,10 +4,10 @@ import (
 	"errors"
 	"os"
 
-	"git.querycap.com/ss/lib/encoding/qjson"
-	"git.querycap.com/ss/lib/net/qsock/qbuf"
-	"git.querycap.com/ss/lib/net/qsock/qmsg"
-	"git.querycap.com/ss/lib/os/qipc"
+	"github.com/saitofun/qlib/encoding/qjson"
+	"github.com/saitofun/qlib/net/qsock/qbuf"
+	"github.com/saitofun/qlib/net/qsock/qmsg"
+	"github.com/saitofun/qlib/os/qipc"
 	"github.com/google/uuid"
 )
 

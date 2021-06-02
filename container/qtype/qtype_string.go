@@ -3,7 +3,7 @@ package qtype
 import (
 	"sync/atomic"
 
-	"git.querycap.com/ss/lib/encoding"
+	"github.com/saitofun/qlib/encoding"
 )
 
 type String struct {

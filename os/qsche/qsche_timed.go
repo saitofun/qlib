@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"git.querycap.com/ss/lib/container/qtype"
+	"github.com/saitofun/qlib/container/qtype"
 )
 
 type timed struct {

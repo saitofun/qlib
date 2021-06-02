@@ -3,8 +3,8 @@ package qsche
 import (
 	"time"
 
-	"git.querycap.com/ss/lib/container/qqueue"
-	"git.querycap.com/ss/lib/os/qtime"
+	"github.com/saitofun/qlib/container/qqueue"
+	"github.com/saitofun/qlib/os/qtime"
 )
 
 const defaultPoolLimit = 64

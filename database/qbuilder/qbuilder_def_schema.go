@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"reflect"
 
-	"git.querycap.com/ss/lib/database"
+	"github.com/saitofun/qlib/database"
 )
 
 type Schema struct {

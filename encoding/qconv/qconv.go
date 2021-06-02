@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"git.querycap.com/ss/lib/encoding"
-	"git.querycap.com/ss/lib/encoding/qjson"
-	"git.querycap.com/ss/lib/os/qtime"
+	"github.com/saitofun/qlib/encoding"
+	"github.com/saitofun/qlib/encoding/qjson"
+	"github.com/saitofun/qlib/os/qtime"
 )
 
 func Int(v interface{}) int64     { return 0 }

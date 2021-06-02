@@ -1,5 +1,5 @@
 package container
 
-import "git.querycap.com/ss/lib/container/qtype"
+import "github.com/saitofun/qlib/container/qtype"
 
 type Var = qtype.Any

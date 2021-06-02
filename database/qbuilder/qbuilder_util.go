@@ -3,7 +3,7 @@ package qbuilder
 import (
 	"sync"
 
-	"git.querycap.com/ss/lib/os/qsync"
+	"github.com/saitofun/qlib/os/qsync"
 )
 
 func IsZero(v interface{}) bool {

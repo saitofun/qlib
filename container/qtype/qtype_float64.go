@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"sync/atomic"
 
-	"git.querycap.com/ss/lib/encoding/qjson"
+	"github.com/saitofun/qlib/encoding/qjson"
 )
 
 type Float64 struct {

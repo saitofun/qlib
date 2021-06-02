@@ -1,6 +1,6 @@
 package qsync
 
-import "git.querycap.com/ss/lib/container/qtype"
+import "github.com/saitofun/qlib/container/qtype"
 
 const (
 	free = false

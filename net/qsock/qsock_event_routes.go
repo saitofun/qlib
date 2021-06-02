@@ -3,8 +3,8 @@ package qsock
 import (
 	"sync"
 
-	"git.querycap.com/ss/lib/net/qsock/qmsg"
-	"git.querycap.com/ss/lib/os/qsche"
+	"github.com/saitofun/qlib/net/qsock/qmsg"
+	"github.com/saitofun/qlib/os/qsche"
 )
 
 type Handler func(*Event)

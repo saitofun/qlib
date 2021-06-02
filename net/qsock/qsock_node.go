@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"git.querycap.com/ss/lib/net/qsock/qbuf"
-	"git.querycap.com/ss/lib/net/qsock/qmsg"
-	"git.querycap.com/ss/lib/os/qsche"
+	"github.com/saitofun/qlib/net/qsock/qbuf"
+	"github.com/saitofun/qlib/net/qsock/qmsg"
+	"github.com/saitofun/qlib/os/qsche"
 )
 
 type NodeTask struct {

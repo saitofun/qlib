@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"testing"
 
-	"git.querycap.com/ss/lib/os/qtime"
+	"github.com/saitofun/qlib/os/qtime"
 )
 
 func TestTime_JSON(t *testing.T) {

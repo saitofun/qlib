@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"git.querycap.com/ss/lib/database"
+	"github.com/saitofun/qlib/database"
 )
 
 var (

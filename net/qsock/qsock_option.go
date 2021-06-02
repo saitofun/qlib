@@ -4,7 +4,7 @@ import (
 	"net"
 	"time"
 
-	"git.querycap.com/ss/lib/net/qsock/qmsg"
+	"github.com/saitofun/qlib/net/qsock/qmsg"
 )
 
 type ProtocolType uint8

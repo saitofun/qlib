@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"git.querycap.com/ss/lib/encoding/qjson"
-	"git.querycap.com/ss/lib/os/qtime"
+	"github.com/saitofun/qlib/encoding/qjson"
+	"github.com/saitofun/qlib/os/qtime"
 )
 
 type Struct struct {

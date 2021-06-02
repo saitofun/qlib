@@ -3,7 +3,7 @@ package qbuf_stream
 import (
 	"sync"
 
-	_b "git.querycap.com/ss/lib/net/qsock/qbuf"
+	_b "github.com/saitofun/qlib/net/qsock/qbuf"
 )
 
 // streamed buffer support TCP connection

@@ -3,8 +3,8 @@ package qsche
 import (
 	"context"
 
-	"git.querycap.com/ss/lib/container/qtype"
-	"git.querycap.com/ss/lib/os/qsync"
+	"github.com/saitofun/qlib/container/qtype"
+	"github.com/saitofun/qlib/os/qsync"
 )
 
 type concurrent struct {

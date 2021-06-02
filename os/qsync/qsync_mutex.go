@@ -3,7 +3,7 @@ package qsync
 import (
 	"sync"
 
-	"git.querycap.com/ss/lib/container/qtype"
+	"github.com/saitofun/qlib/container/qtype"
 )
 
 // @TODO

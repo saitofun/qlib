@@ -1,6 +1,6 @@
 package qqueue
 
-import "git.querycap.com/ss/lib/container/qtype"
+import "github.com/saitofun/qlib/container/qtype"
 
 type limited struct {
 	qch    chan interface{}

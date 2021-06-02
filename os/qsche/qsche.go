@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"git.querycap.com/ss/lib/os/qsync"
+	"github.com/saitofun/qlib/os/qsync"
 )
 
 type Fn func()

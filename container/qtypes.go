@@ -1,7 +1,7 @@
 package container
 
 import (
-	"git.querycap.com/ss/lib/container/qtype"
+	"github.com/saitofun/qlib/container/qtype"
 )
 
 type _boolean interface {

@@ -1,6 +1,6 @@
 package qipc
 
-import "git.querycap.com/ss/lib/net/qsock"
+import "github.com/saitofun/qlib/net/qsock"
 
 type IPCEvent struct {
 	node *qsock.Node

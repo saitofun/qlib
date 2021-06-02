@@ -1,7 +1,7 @@
 package qjson
 
 import (
-	"git.querycap.com/ss/lib/encoding"
+	"github.com/saitofun/qlib/encoding"
 )
 
 // CAUTION: the following functions ignore json marshal error

@@ -3,8 +3,8 @@ package qqueue
 import (
 	"math"
 
-	"git.querycap.com/ss/lib/container/qlist"
-	"git.querycap.com/ss/lib/container/qtype"
+	"github.com/saitofun/qlib/container/qlist"
+	"github.com/saitofun/qlib/container/qtype"
 )
 
 type unlimited struct {

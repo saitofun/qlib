@@ -5,9 +5,9 @@ import (
 	"errors"
 	"time"
 
-	"git.querycap.com/ss/lib/container/qlist"
-	"git.querycap.com/ss/lib/container/qtype"
-	"git.querycap.com/ss/lib/os/qtime"
+	"github.com/saitofun/qlib/container/qlist"
+	"github.com/saitofun/qlib/container/qtype"
+	"github.com/saitofun/qlib/os/qtime"
 )
 
 type Pool struct {

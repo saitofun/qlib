@@ -7,11 +7,11 @@ import (
 	"strconv"
 	"time"
 
-	"git.querycap.com/ss/lib/net/qsock/qbuf"
-	"git.querycap.com/ss/lib/net/qsock/qbuf/qbuf_packet"
-	"git.querycap.com/ss/lib/net/qsock/qbuf/qbuf_stream"
-	"git.querycap.com/ss/lib/net/qsock/qmsg"
-	"git.querycap.com/ss/lib/os/qsche"
+	"github.com/saitofun/qlib/net/qsock/qbuf"
+	"github.com/saitofun/qlib/net/qsock/qbuf/qbuf_packet"
+	"github.com/saitofun/qlib/net/qsock/qbuf/qbuf_stream"
+	"github.com/saitofun/qlib/net/qsock/qmsg"
+	"github.com/saitofun/qlib/os/qsche"
 )
 
 type Server struct {
