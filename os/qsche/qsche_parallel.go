@@ -9,16 +9,18 @@ import (
 
 type concurrent struct {
 	*Workers
+	id      string
 	started *qtype.Bool
 	con     int
 	ctx     context.Context
 	cancel  context.CancelFunc
 }
 
-func NewConScheduler(concurrency int) WorkersScheduler {
+func NewConScheduler(id string, concurrency int) WorkersScheduler {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &concurrent{
 		Workers: NewWorkers(concurrency),
+		id:      id,
 		started: qtype.NewBool(),
 		con:     concurrency,
 		ctx:     ctx,
@@ -26,8 +28,8 @@ func NewConScheduler(concurrency int) WorkersScheduler {
 	}
 }
 
-func RunConScheduler(concurrency int) WorkersScheduler {
-	ret := NewConScheduler(concurrency)
+func RunConScheduler(id string, concurrency int) WorkersScheduler {
+	ret := NewConScheduler(id, concurrency)
 	ret.Run()
 	return ret
 }

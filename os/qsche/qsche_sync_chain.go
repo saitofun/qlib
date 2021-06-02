@@ -8,23 +8,25 @@ import (
 
 type chain struct {
 	*Workers
+	id      string
 	started *qtype.Bool
 	ctx     context.Context
 	cancel  context.CancelFunc
 }
 
-func NewChainedScheduler(lmt ...int) WorkersScheduler {
+func NewChainedScheduler(id string, lmt ...int) WorkersScheduler {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &chain{
 		Workers: NewWorkers(lmt...),
+		id:      id,
 		started: qtype.NewBool(),
 		ctx:     ctx,
 		cancel:  cancel,
 	}
 }
 
-func RunChainedScheduler(lmt ...int) WorkersScheduler {
-	ret := NewChainedScheduler(lmt...)
+func RunChainedScheduler(id string, lmt ...int) WorkersScheduler {
+	ret := NewChainedScheduler(id, lmt...)
 	ret.Run()
 	return ret
 }
