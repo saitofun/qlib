@@ -122,7 +122,9 @@ func (n *Node) Request(req qmsg.Message, d time.Duration) (qmsg.Message, error) 
 	if n.closed {
 		return nil, ENodeClosed
 	}
-	n.binder.New(req.ID())
+	if n.binder.New(req.ID()) != nil {
+		return nil, EMessageIdRepeated.WithMessage(req.ID().String())
+	}
 	defer n.binder.Remove(req.ID())
 	if err := n.WriteMessage(req); err != nil {
 		return nil, err

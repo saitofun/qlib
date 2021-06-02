@@ -25,6 +25,7 @@ const (
 	ENodeOption
 	EMessageUnbound
 	EMessageTimeout
+	EMessageIdRepeated
 )
 
 var es = [...]string{
@@ -46,10 +47,11 @@ var es = [...]string{
 	ENodeOption:            "qsock.Option",
 	EMessageUnbound:        "qsock.UnboundMessage",
 	EMessageTimeout:        "qsock.MessageTimeout",
+	EMessageIdRepeated:     "qsock.MessageIdRepeated",
 }
 
 func (e Errno) Error() string {
-	if e >= ENodeTimeout && e <= EMessageTimeout {
+	if e >= ENodeTimeout && e <= EMessageIdRepeated {
 		return es[e]
 	}
 	return ""

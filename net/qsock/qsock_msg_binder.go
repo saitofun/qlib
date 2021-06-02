@@ -19,11 +19,16 @@ func NewBinder() *Binder {
 	}
 }
 
-func (b *Binder) New(id qmsg.ID) {
+func (b *Binder) New(id qmsg.ID) error {
 	b.Lock()
 	defer b.Unlock()
 
+	if _, ok := b.mapping[id.String()]; ok {
+		return EMessageIdRepeated
+	}
+
 	b.mapping[id.String()] = make(chan qmsg.Message, 1)
+	return nil
 }
 
 func (b *Binder) get(id string) <-chan qmsg.Message {
