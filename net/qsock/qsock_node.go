@@ -123,8 +123,8 @@ func (n *Node) Request(req qmsg.Message, d time.Duration) (qmsg.Message, error) 
 		return nil, ENodeClosed
 	}
 	n.binder.New(req.ID())
+	defer n.binder.Remove(req.ID())
 	if err := n.WriteMessage(req); err != nil {
-		n.binder.Remove(req.ID())
 		return nil, err
 	}
 	return n.binder.Wait(req.ID(), d)

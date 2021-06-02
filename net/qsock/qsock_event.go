@@ -9,6 +9,10 @@ type Event struct {
 	payload qmsg.Message
 }
 
+func NewEvent(node *Node, pld qmsg.Message) *Event {
+	return &Event{node, pld}
+}
+
 func (ev *Event) From() *Node {
 	return ev.node
 }

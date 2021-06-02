@@ -56,8 +56,6 @@ func (b *Binder) Push(msg qmsg.Message) bool {
 }
 
 func (b *Binder) Wait(id qmsg.ID, d time.Duration) (qmsg.Message, error) {
-	defer b.del(id.String())
-
 	c := b.get(id.String())
 	if c == nil {
 		return nil, EMessageUnbound
