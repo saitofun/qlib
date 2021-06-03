@@ -65,6 +65,7 @@ func (b *Binder) Wait(id qmsg.ID, d time.Duration) (qmsg.Message, error) {
 	if c == nil {
 		return nil, EMessageUnbound
 	}
+	defer b.del(id.String())
 
 	select {
 	case ret := <-c:

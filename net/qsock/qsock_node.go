@@ -125,8 +125,8 @@ func (n *Node) Request(req qmsg.Message, d time.Duration) (qmsg.Message, error) 
 	if n.binder.New(req.ID()) != nil {
 		return nil, EMessageIdRepeated
 	}
-	defer n.binder.Remove(req.ID())
 	if err := n.WriteMessage(req); err != nil {
+		n.binder.Remove(req.ID())
 		return nil, err
 	}
 	return n.binder.Wait(req.ID(), d)
