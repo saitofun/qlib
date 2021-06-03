@@ -13,15 +13,17 @@ type Context struct {
 	resc     chan *Result  // resc result chan
 	res      *Result       // res result
 	done     chan struct{} // done context done chan
+	seq      int64         // seq job sequence in workers pool
 	Job
 }
 
-func NewContext(j Job) *Context {
+func NewContext(j Job, seq int64) *Context {
 	ret := &Context{
 		Job:  j,
 		resc: make(chan *Result, 1),
 		res:  &Result{},
 		done: make(chan struct{}, 1),
+		seq:  seq,
 	}
 	ret.stat[0] = qtime.NewTime()
 	return ret
@@ -76,6 +78,8 @@ func (c *Context) Result() (interface{}, error) {
 	r := <-c.resc
 	return r.Val, r.error
 }
+
+func (c *Context) Sequence() int64 { return c.seq }
 
 // stat 0 commit 1 scheduled 3 done
 type stat [3]*qtime.Time

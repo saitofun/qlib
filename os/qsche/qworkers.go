@@ -4,13 +4,15 @@ import (
 	"time"
 
 	"github.com/saitofun/qlib/container/qqueue"
+	"github.com/saitofun/qlib/container/qtype"
 	"github.com/saitofun/qlib/os/qtime"
 )
 
 const defaultPoolLimit = 64
 
 type Workers struct {
-	q qqueue.Queue
+	q   qqueue.Queue
+	seq *qtype.Int64
 }
 
 func NewWorkers(lmt ...int) *Workers {
@@ -18,23 +20,23 @@ func NewWorkers(lmt ...int) *Workers {
 	if len(lmt) > 0 && lmt[0] > 0 {
 		limit = lmt[0]
 	}
-	return &Workers{q: qqueue.NewLimited(limit)}
+	return &Workers{q: qqueue.NewLimited(limit), seq: qtype.NewInt64()}
 }
 
 func (p *Workers) Add(j Job) (ctx *Context) {
-	ctx = NewContext(j)
+	ctx = NewContext(j, p.seq.Add(1))
 	p.q.Push(ctx)
 	return ctx
 }
 
 func (p *Workers) AddWithDeadline(j Job, deadline time.Time) (ctx *Context) {
-	ctx = NewContext(j)
+	ctx = NewContext(j, p.seq.Add(1))
 	p.q.Push(ctx.WithDeadline(deadline))
 	return ctx
 }
 
 func (p *Workers) AddWithTimeout(j Job, timeout time.Duration) (ctx *Context) {
-	ctx = NewContext(j)
+	ctx = NewContext(j, p.seq.Add(1))
 	p.q.Push(ctx.WithTimeout(timeout))
 	return ctx
 }
