@@ -27,7 +27,7 @@ func (cs *clients) New(n *Node) {
 	go func(n *Node) {
 		defer cs.Remove(n.ID())
 		for {
-			if n.closed {
+			if n.closed.Val(){
 				return
 			}
 			msg, _ := n.ReadMessage(0)

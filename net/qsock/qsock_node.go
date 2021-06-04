@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/saitofun/qlib/container/qtype"
 	"github.com/saitofun/qlib/net/qsock/qbuf"
 	"github.com/saitofun/qlib/net/qsock/qmsg"
 	"github.com/saitofun/qlib/os/qsche"
@@ -36,7 +37,7 @@ type Node struct {
 	writerMtx *sync.Mutex
 	mgr       *clients
 	protocol  ProtocolType
-	closed    bool
+	closed    *qtype.Bool
 	reason    string
 }
 
@@ -45,6 +46,7 @@ func NewNode() *Node {
 		onceClose: &sync.Once{},
 		writerMtx: &sync.Mutex{},
 		binder:    NewBinder(),
+		closed:    qtype.NewBool(),
 	}
 	ret.ctx, ret.cancel = context.WithCancel(context.Background())
 	return ret
@@ -67,7 +69,7 @@ func (n *Node) WithContext(ctx context.Context) *Node {
 
 // ReadMessage read message from receive channel
 func (n *Node) ReadMessage(d time.Duration) (msg qmsg.Message, err error) {
-	if n.closed {
+	if n.closed.Val() {
 		return nil, ENodeClosed
 	}
 	if d == 0 {
@@ -83,7 +85,7 @@ func (n *Node) ReadMessage(d time.Duration) (msg qmsg.Message, err error) {
 
 // WriteMessage write message to send buffer
 func (n *Node) WriteMessage(msg qmsg.Message) (err error) {
-	if n.closed {
+	if n.closed.Val() {
 		return ENodeClosed
 	}
 	n.writerMtx.Lock()
@@ -102,9 +104,19 @@ func (n *Node) WriteMessage(msg qmsg.Message) (err error) {
 	return err
 }
 
+// WriteRaw write binary data to send buffer
+func (n *Node) WriteRaw(msg []byte) (int, error) {
+	if n.closed.Val() {
+		return 0, ENodeClosed
+	}
+	n.writerMtx.Lock()
+	defer n.writerMtx.Unlock()
+	return n.write(msg)
+}
+
 // SendMessage send message to send queue
 func (n *Node) SendMessage(msg qmsg.Message) (err error) {
-	if n.closed {
+	if n.closed.Val() {
 		return ENodeClosed
 	}
 	defer func() {
@@ -119,7 +131,7 @@ func (n *Node) SendMessage(msg qmsg.Message) (err error) {
 
 // Request request message to peer until timeout or responded
 func (n *Node) Request(req qmsg.Message, d time.Duration) (qmsg.Message, error) {
-	if n.closed {
+	if n.closed.Val() {
 		return nil, ENodeClosed
 	}
 	if n.binder.New(req.ID()) != nil {
@@ -161,7 +173,7 @@ func (n *Node) Stop(reason ...interface{}) {
 		if n.binder != nil {
 			n.binder.Reset()
 		}
-		n.closed = true
+		n.closed.Set(true)
 		n.reason = fmt.Sprint(reason...)
 		fmt.Printf("%s cloesd: %v remote: %s\n", n.id, n.reason, addr)
 	})

@@ -22,7 +22,7 @@ func NewContext(j Job, seq int64) *Context {
 		Job:  j,
 		resc: make(chan *Result, 1),
 		res:  &Result{},
-		done: make(chan struct{}, 1),
+		done: make(chan struct{}),
 		seq:  seq,
 	}
 	ret.stat[0] = qtime.NewTime()
@@ -37,7 +37,7 @@ func (c *Context) Deadline() (deadline time.Time, ok bool) {
 	return
 }
 
-func (c *Context) Value(key interface{}) interface{} { return nil }
+func (c *Context) Value(_ interface{}) interface{} { return nil }
 
 func (c *Context) Done() <-chan struct{} { return c.done }
 

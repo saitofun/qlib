@@ -92,6 +92,10 @@ func (c *Client) WriteMessage(msg qmsg.Message) (err error) {
 	return c.node.WriteMessage(msg)
 }
 
+func (c *Client) WriteRaw(msg []byte) (int, error) {
+	return c.node.WriteRaw(msg)
+}
+
 func (c *Client) Request(req qmsg.Message) (qmsg.Message, error) {
 	return c.node.Request(req, c.timeout)
 }
@@ -101,7 +105,7 @@ func (c *Client) Close(reason ...interface{}) {
 }
 
 func (c *Client) IsClosed() bool {
-	return c.node.closed
+	return c.node.closed.Val()
 }
 
 func (c *Client) StopReason() string {
