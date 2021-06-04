@@ -22,7 +22,7 @@ func NewContext(j Job, seq int64) *Context {
 		Job:  j,
 		resc: make(chan *Result, 1),
 		res:  &Result{},
-		done: make(chan struct{}),
+		done: make(chan struct{}, 1),
 		seq:  seq,
 	}
 	ret.stat[0] = qtime.NewTime()
