@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/saitofun/qlib/os/qipc"
 	"github.com/saitofun/qlib/os/qipc/qipc_test"
-	"github.com/google/uuid"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 
 		fmt.Println("<-", req)
 
-		rsp, err := qipc.Request(75087, qipc_test.NewReq())
+		rsp, err := qipc.Request(2712, qipc_test.NewReq())
 		if err != nil {
 			fmt.Println(err)
 		}

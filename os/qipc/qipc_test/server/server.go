@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/saitofun/qlib/os/qipc"
 	"github.com/saitofun/qlib/os/qipc/qipc_test"
@@ -9,6 +10,7 @@ import (
 
 func main() {
 	qipc.SetMessageParser(qipc_test.Parser)
+	fmt.Println(os.Getpid())
 	for {
 		ev, err := qipc.ReceiveEvent()
 		if err != nil {

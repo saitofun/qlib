@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/saitofun/qlib/net/qmsg"
 	"github.com/saitofun/qlib/net/qsock"
-	"github.com/saitofun/qlib/net/qsock/qmsg"
 )
 
 type ipc struct {

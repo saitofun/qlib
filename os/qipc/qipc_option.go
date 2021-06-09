@@ -3,7 +3,7 @@ package qipc
 import (
 	"time"
 
-	"github.com/saitofun/qlib/net/qsock/qmsg"
+	"github.com/saitofun/qlib/net/qmsg"
 )
 
 type option struct {

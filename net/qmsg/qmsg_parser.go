@@ -3,7 +3,7 @@ package qmsg
 import (
 	"errors"
 
-	"github.com/saitofun/qlib/net/qsock/qbuf"
+	"github.com/saitofun/qlib/net/qbuf"
 )
 
 type Parser interface {

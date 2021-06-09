@@ -3,7 +3,7 @@ package qsock
 import (
 	"sync"
 
-	"github.com/saitofun/qlib/net/qsock/qmsg"
+	"github.com/saitofun/qlib/net/qmsg"
 	"github.com/saitofun/qlib/os/qsche"
 )
 

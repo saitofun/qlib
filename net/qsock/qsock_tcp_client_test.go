@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/saitofun/qlib/encoding/qjson"
+	"github.com/saitofun/qlib/net/qmsg"
 	"github.com/saitofun/qlib/net/qsock"
-	"github.com/saitofun/qlib/net/qsock/qmsg"
 )
 
 func TestTCPClient(t *testing.T) {

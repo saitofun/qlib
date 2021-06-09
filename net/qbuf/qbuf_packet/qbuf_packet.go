@@ -3,7 +3,7 @@ package qbuf_packet
 import (
 	"bytes"
 
-	_b "github.com/saitofun/qlib/net/qsock/qbuf"
+	_b "github.com/saitofun/qlib/net/qbuf"
 )
 
 var _ = bytes.Buffer{}

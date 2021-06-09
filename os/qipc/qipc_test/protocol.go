@@ -4,11 +4,11 @@ import (
 	"errors"
 	"os"
 
-	"github.com/saitofun/qlib/encoding/qjson"
-	"github.com/saitofun/qlib/net/qsock/qbuf"
-	"github.com/saitofun/qlib/net/qsock/qmsg"
-	"github.com/saitofun/qlib/os/qipc"
 	"github.com/google/uuid"
+	"github.com/saitofun/qlib/encoding/qjson"
+	"github.com/saitofun/qlib/net/qbuf"
+	"github.com/saitofun/qlib/net/qmsg"
+	"github.com/saitofun/qlib/os/qipc"
 )
 
 type Type string

@@ -4,9 +4,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/saitofun/qlib/net/qsock/qbuf/qbuf_packet"
-	"github.com/saitofun/qlib/net/qsock/qbuf/qbuf_stream"
-	"github.com/saitofun/qlib/net/qsock/qmsg"
+	"github.com/saitofun/qlib/net/qbuf/qbuf_packet"
+	"github.com/saitofun/qlib/net/qbuf/qbuf_stream"
+	"github.com/saitofun/qlib/net/qmsg"
 	"github.com/saitofun/qlib/os/qsche"
 )
 

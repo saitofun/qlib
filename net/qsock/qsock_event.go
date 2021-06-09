@@ -1,7 +1,7 @@
 package qsock
 
 import (
-	"github.com/saitofun/qlib/net/qsock/qmsg"
+	"github.com/saitofun/qlib/net/qmsg"
 )
 
 type Event struct {
