@@ -16,14 +16,9 @@ type Message interface {
 
 type WithTimestamp interface {
 	GetTs() int64
-	SetTs(int64)
+	SetTs()
 }
 
 type WithErrorCheck interface {
 	Err() error
-}
-
-type WithReused interface {
-	Renew()
-	RenewWithID(ID) // for responding
 }
