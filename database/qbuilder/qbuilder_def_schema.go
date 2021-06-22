@@ -8,6 +8,11 @@ import (
 	"github.com/saitofun/qlib/database"
 )
 
+var (
+	ErrSchemaModelNilInput        = errors.New("SchemaModelNilInput")
+	ErrSchemaModelUnsupportedType = errors.New("SchemaModelUnsupportedType")
+)
+
 type Schema struct {
 	Name         string
 	Database     string
@@ -22,15 +27,13 @@ type Schema struct {
 	indexes      []*Field
 }
 
-var (
-	ErrSchemaModelNilInput        = errors.New("SchemaModelNilInput")
-	ErrSchemaModelUnsupportedType = errors.New("SchemaModelUnsupportedType")
-)
+func (s *Schema) FullName() string { return s.Database + "_" + s.Name }
 
 func Model(m interface{}) (ret *Schema, err error) {
 	if m == nil {
 		return nil, ErrSchemaModelNilInput
 	}
+
 	mt := reflect.ValueOf(m).Type()
 	for mt.Kind() == reflect.Slice || mt.Kind() == reflect.Array || mt.Kind() == reflect.Ptr {
 		mt = mt.Elem()
@@ -45,7 +48,7 @@ func Model(m interface{}) (ret *Schema, err error) {
 	if t, ok := mv.Interface().(database.T); ok {
 		s.Table = t.TableName()
 	} else {
-		s.Table = NamingStrategy.TableName(mt.Name())
+		s.Table = TableName(mt.Name())
 	}
 	s.ModelRV = mv
 

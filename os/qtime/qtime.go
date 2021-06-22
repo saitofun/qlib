@@ -105,6 +105,10 @@ func Now() Time {
 	return Time{time.Now()}
 }
 
+func NowLocal() Time {
+	return Time{time.Now().Local()}
+}
+
 func NowSecond() int64 {
 	return Now().Unix()
 }

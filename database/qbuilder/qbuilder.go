@@ -14,3 +14,25 @@ func JoinQueries(queries ...*Query) *Query {
 	}
 	return ret
 }
+
+type WithPrimary interface {
+	Primary() string
+	PrimaryID() uint64
+}
+
+type WithSoftDelete interface {
+	SoftDelete()
+}
+
+type WithOperationTimes interface {
+	OnUpdate()
+	OnCreate()
+	OnDelete()
+}
+
+type Naming interface {
+	TableName(tab string) string
+	ColumnName(tab, col string) string
+	IndexName(tab string, col ...string) string
+	UniqueIndexName(tab string, col ...string) string
+}

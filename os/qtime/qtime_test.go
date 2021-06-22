@@ -1,6 +1,7 @@
 package qtime_test
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 
@@ -80,4 +81,10 @@ func TestTime_JSON(t *testing.T) {
 			return
 		}
 	}
+}
+
+
+func TestNewTime(t *testing.T) {
+	fmt.Println(qtime.Now().Unix())
+	fmt.Println(qtime.NowLocal().Unix())
 }
