@@ -5,8 +5,6 @@ import (
 	"go/ast"
 	"reflect"
 	"sync"
-
-	"github.com/saitofun/qlib/database"
 )
 
 var (
@@ -183,52 +181,53 @@ func (s *Schema) NewSelectDestSliceWithCap(cap int) reflect.Value {
 }
 
 func (s *Schema) ParseField(fs reflect.StructField, fv reflect.Value, fields []*Field) {
-	tag, ok := fs.Tag.Lookup("db")
-	if !ok && fs.Anonymous {
-		for i := 0; i < fv.NumField(); i++ {
-			s.ParseField(fv.Type().Field(i), fv.Field(i), fields)
-		}
-	}
+	return
+	// tag, ok := fs.Tag.Lookup("db")
+	// if !ok && fs.Anonymous {
+	// 	for i := 0; i < fv.NumField(); i++ {
+	// 		s.ParseField(fv.Type().Field(i), fv.Field(i), fields)
+	// 	}
+	// }
 
-	f := &Field{
-		Name:         fs.Name,
-		Column:       "",
-		Schema:       s,
-		Tags:         ParseTags(fs.Tag, ","),
-		DataType:     "",
-		SQLType:      "",
-		Struct:       fs,
-		Type:         fs.Type,
-		IndirectType: fs.Type,
-	}
-	for f.IndirectType.Kind() == reflect.Ptr {
-		f.IndirectType = f.IndirectType.Elem()
-	}
+	// f := &Field{
+	// 	Name:         fs.Name,
+	// 	Column:       "",
+	// 	Schema:       s,
+	// 	Tags:         ParseTags(fs.Tag, ","),
+	// 	DataType:     "",
+	// 	SQLType:      "",
+	// 	Struct:       fs,
+	// 	Type:         fs.Type,
+	// 	IndirectType: fs.Type,
+	// }
+	// for f.IndirectType.Kind() == reflect.Ptr {
+	// 	f.IndirectType = f.IndirectType.Elem()
+	// }
 
-	fv := reflect.New(f.IndirectType)
+	// fv := reflect.New(f.IndirectType)
 
-	if c, ok := fv.Interface().(database.C); ok {
-		f.Column = c.ColumnName()
-	} else {
-		if f.Column = f.Tags.ColumnName(); f.Column == "" {
-			f.Column = NamingStrategy.ColumnName(s.Table, f.Name)
-		}
-	}
+	// if c, ok := fv.Interface().(database.C); ok {
+	// 	f.Column = c.ColumnName()
+	// } else {
+	// 	if f.Column = f.Tags.ColumnName(); f.Column == "" {
+	// 		f.Column = NamingStrategy.ColumnName(s.Table, f.Name)
+	// 	}
+	// }
 
-	if t, ok := fv.Interface().(database.SQLType); ok {
-		f.SQLType = t.SQLType("")
-	} else {
-		switch f.IndirectType.Kind() {
-		case reflect.Bool:
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		case reflect.Float32, reflect.Float64:
-		case reflect.String:
-		case reflect.Struct:
-		case reflect.Slice, reflect.Array:
-		}
-	}
-	return f
+	// if t, ok := fv.Interface().(database.SQLType); ok {
+	// 	f.SQLType = t.SQLType("")
+	// } else {
+	// 	switch f.IndirectType.Kind() {
+	// 	case reflect.Bool:
+	// 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+	// 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+	// 	case reflect.Float32, reflect.Float64:
+	// 	case reflect.String:
+	// 	case reflect.Struct:
+	// 	case reflect.Slice, reflect.Array:
+	// 	}
+	// }
+	// return f
 }
 
 // ArgsEx argument list expression: eg (?,?,...)

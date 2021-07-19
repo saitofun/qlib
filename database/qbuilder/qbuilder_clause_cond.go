@@ -2,8 +2,6 @@ package qbuilder
 
 import (
 	"sync"
-
-	"github.com/saitofun/qlib/os/qsync"
 )
 
 type CondType int
@@ -47,20 +45,20 @@ var FieldCondCache = struct {
 }
 
 func FieldCondExpr(f *Field, t CondType, arg ...interface{}) CondEx {
-	qsync.Guard(FieldCondCache.mtx).Do(func() {
-		if len(FieldCondCache.val) == 0 {
+	// qsync.Guard(FieldCondCache.mtx).Do(func() {
+	// 	if len(FieldCondCache.val) == 0 {
 
-		}
-		if _, ok := FieldCondCache.val[f.Schema.Database]; !ok {
-			FieldCondCache.val[f.Schema.Database] = make(map[string][14]string)
-		}
-	})
+	// 	}
+	// 	if _, ok := FieldCondCache.val[f.Schema.Database]; !ok {
+	// 		FieldCondCache.val[f.Schema.Database] = make(map[string][14]string)
+	// 	}
+	// })
 
-	switch t {
-	case CondIS, CondEQ, CondNOTEQ, CondLT, CondLTE, CondGT, CondGTE:
-	case CondBETWEEN, CondNOTBETWEEN:
-	case CondLIKE, CondLLIKE, CondRLIKE:
-	case CondIN:
-	}
+	// switch t {
+	// case CondIS, CondEQ, CondNOTEQ, CondLT, CondLTE, CondGT, CondGTE:
+	// case CondBETWEEN, CondNOTBETWEEN:
+	// case CondLIKE, CondLLIKE, CondRLIKE:
+	// case CondIN:
+	// }
 	return AsCond(nil)
 }
