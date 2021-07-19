@@ -1,5 +1,7 @@
 package qbuilder
 
 type Index struct {
-	Name string
+	Name   string
+	Unique bool
+	Fields []Field
 }

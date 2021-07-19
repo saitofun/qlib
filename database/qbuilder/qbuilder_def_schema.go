@@ -4,6 +4,7 @@ import (
 	"errors"
 	"go/ast"
 	"reflect"
+	"sync"
 
 	"github.com/saitofun/qlib/database"
 )
@@ -14,26 +15,29 @@ var (
 )
 
 type Schema struct {
-	Name         string
-	Database     string
-	Table        string
-	ModelRT      reflect.Type
-	ModelRV      reflect.Value
-	fields       []*Field
-	nameFields   map[string]*Field
-	columnFields map[string]*Field
-	primary      *Field
-	primaries    []*Field
-	indexes      []*Field
+	Name           string
+	ReflectName    string
+	DatabaseName   string
+	TableName      string
+	PkgPath        string
+	FullName       string
+	ModelRT        reflect.Type
+	ModelRV        reflect.Value
+	Fields         []*Field
+	FieldsByName   map[string]*Field
+	FieldsByColumn map[string]*Field
+	FieldsByID     map[int]*Field
+	Primary        *Field
+	Primaries      []*Field
+	Indexes        []*Index
 }
 
-func (s *Schema) FullName() string { return s.Database + "_" + s.Name }
-
-func Model(m interface{}) (ret *Schema, err error) {
+func RegisterModel(m interface{}) (ret *Schema, err error) {
 	if m == nil {
 		return nil, ErrSchemaModelNilInput
 	}
 
+	// reflect
 	mt := reflect.ValueOf(m).Type()
 	for mt.Kind() == reflect.Slice || mt.Kind() == reflect.Array || mt.Kind() == reflect.Ptr {
 		mt = mt.Elem()
@@ -41,22 +45,62 @@ func Model(m interface{}) (ret *Schema, err error) {
 	if mt.Kind() != reflect.Struct {
 		return nil, ErrSchemaModelUnsupportedType
 	}
-	s := &Schema{ModelRT: mt}
-
-	// TODO cache[mt.String()].EXISTED
 	mv := reflect.New(mt)
-	if t, ok := mv.Interface().(database.T); ok {
-		s.Table = t.TableName()
-	} else {
-		s.Table = TableName(mt.Name())
-	}
-	s.ModelRV = mv
 
-	s.fields = make([]*Field, 0, mt.NumField())
+	// schema basic
+	s := &Schema{
+		Name:           mt.Name(),
+		ReflectName:    mt.String(),
+		ModelRT:        mt,
+		ModelRV:        mv,
+		FieldsByName:   make(map[string]*Field),
+		FieldsByColumn: make(map[string]*Field),
+		FieldsByID:     make(map[int]*Field),
+	}
+
+	// schema.DatabaseName
+	if t, ok := mv.Interface().(WithDatabaseName); ok {
+		s.DatabaseName = t.DatabaseName()
+	} else if t, ok := mv.Interface().(WithSchemaName); ok {
+		s.DatabaseName = t.SchemaName()
+	}
+
+	// schema.PkgPath
+	s.PkgPath = mt.PkgPath()
+
+	if s.DatabaseName == "" {
+		s.FullName = s.PkgPath + "." + s.Name
+	} else {
+		s.FullName = s.DatabaseName + "." + s.Name
+	}
+
+	if v := schemas.Get(s.FullName); v != nil {
+		return v, nil
+	}
+
+	// schema.TableName
+	if t, ok := mv.Interface().(WithTableName); ok {
+		s.TableName = t.TableName()
+	} else {
+		TableName(s.Name)
+	}
+
+	s.Fields = make([]*Field, 0)
 	for i := 0; i < mt.NumField(); i++ {
-		if fs := mt.Field(i); ast.IsExported(fs.Name) {
-			s.fields = append(s.fields, s.ParseField(fs))
+		fs := mt.Field(i)
+		fv := mv.Field(i)
+		if ast.IsExported(fs.Name) && !fs.Anonymous {
+			continue
 		}
+		fields := make([]*Field, 0)
+		s.ParseField(fs, fv, fields)
+		s.Fields = append(s.Fields, fields...)
+	}
+
+	for i := range s.Fields {
+		s.FieldsByID[i] = s.Fields[i]
+		s.FieldsByName[s.Fields[i].Name] = s.Fields[i]
+		s.FieldsByColumn[s.Fields[i].Column] = s.Fields[i]
 	}
 	ret = s
 	return
@@ -68,21 +112,12 @@ func (s *Schema) Clone() *Schema { return s }
 // WithValue reset Schema.mv
 func (s *Schema) WithValue(m interface{}) *Schema { return nil }
 
-// Field return *Field by StructField index
-func (s *Schema) Field(i int) *Field { return s.fields[i] }
-
-// FieldByName return *Field by StructField name
-func (s *Schema) FieldByName(name string) *Field { return s.nameFields[name] }
-
-// FieldByCol return *Field by column name
-func (s *Schema) FieldByCol(col string) *Field { return s.columnFields[col] }
-
 // LookupField return *Field by column name or StructField name
 func (s *Schema) LookupField(name string) *Field {
-	if r, ok := s.nameFields[name]; ok {
+	if r, ok := s.FieldsByName[name]; ok {
 		return r
 	}
-	if r, ok := s.columnFields[name]; ok {
+	if r, ok := s.FieldsByColumn[name]; ok {
 		return r
 	}
 	return nil
@@ -147,7 +182,14 @@ func (s *Schema) NewSelectDestSliceWithCap(cap int) reflect.Value {
 	return ret
 }
 
-func (s *Schema) ParseField(fs reflect.StructField) *Field {
+func (s *Schema) ParseField(fs reflect.StructField, fv reflect.Value, fields []*Field) {
+	tag, ok := fs.Tag.Lookup("db")
+	if !ok && fs.Anonymous {
+		for i := 0; i < fv.NumField(); i++ {
+			s.ParseField(fv.Type().Field(i), fv.Field(i), fields)
+		}
+	}
+
 	f := &Field{
 		Name:         fs.Name,
 		Column:       "",
@@ -209,3 +251,23 @@ func (s *Schema) Delete(m interface{}, cond ...Cond) Ex { return nil }
 
 // Select select by primary SQL query: SELECT * FROM t_tab WHERE f_a=? AND f_b>?...
 func (s *Schema) Select(m interface{}, cond ...Cond) Ex { return nil }
+
+type SchemaCache struct {
+	mtx *sync.Mutex
+	val map[string]*Schema
+}
+
+var schemas *SchemaCache
+
+func (s *SchemaCache) Exist(name string) bool {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+	_, ok := s.val[name]
+	return ok
+}
+
+func (s *SchemaCache) Get(name string) *Schema {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+	return s.val[name]
+}

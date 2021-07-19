@@ -7,4 +7,3 @@ type Primary struct {
 func (v *Primary) Primary() []string { return []string{"ID"} }
 
 func (v *Primary) PrimaryID() uint64 { return v.ID }
-

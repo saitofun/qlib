@@ -24,10 +24,29 @@ type WithSoftDelete interface {
 	SoftDelete()
 }
 
-type WithOperationTimes interface {
+type WithOperationTime interface {
 	OnUpdate()
 	OnCreate()
 	OnDelete()
+}
+
+// WithDatabaseName model's schema name
+type WithDatabaseName interface {
+	DatabaseName() string
+}
+
+// WithSchemaName model's schema name
+type WithSchemaName interface {
+	SchemaName() string
+}
+
+type WithTableName interface {
+	TableName() string
+}
+
+// WithIndexes model's indexes
+type WithIndexes interface {
+	Indexes() []Index
 }
 
 type Naming interface {
