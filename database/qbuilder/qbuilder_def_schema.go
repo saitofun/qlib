@@ -181,7 +181,6 @@ func (s *Schema) NewSelectDestSliceWithCap(cap int) reflect.Value {
 }
 
 func (s *Schema) ParseField(fs reflect.StructField, fv reflect.Value, fields []*Field) {
-	return
 	// tag, ok := fs.Tag.Lookup("db")
 	// if !ok && fs.Anonymous {
 	// 	for i := 0; i < fv.NumField(); i++ {
@@ -228,6 +227,7 @@ func (s *Schema) ParseField(fs reflect.StructField, fv reflect.Value, fields []*
 	// 	}
 	// }
 	// return f
+	return
 }
 
 // ArgsEx argument list expression: eg (?,?,...)
