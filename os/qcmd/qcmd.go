@@ -83,7 +83,7 @@ func (c *Cmd) Exec(args ...string) (ls []string, err error) {
 }
 
 func (c *Cmd) Launch(args ...string) {
-	c.cmd = exec.Command(strings.Join(args, " "))
+	c.cmd = exec.Command("sh", "-c", strings.Join(args, " "))
 	go func() {
 		c.err = c.cmd.Start()
 		if c.err != nil {
