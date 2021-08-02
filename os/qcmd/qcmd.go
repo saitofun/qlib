@@ -103,3 +103,10 @@ func (c *Cmd) State() (error, bool) {
 	}
 	return nil, false
 }
+
+func (c *Cmd) Pid() int {
+	if c.cmd != nil && c.cmd.ProcessState != nil {
+		return c.cmd.ProcessState.Pid()
+	}
+	return 0
+}
