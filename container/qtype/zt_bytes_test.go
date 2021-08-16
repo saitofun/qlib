@@ -1,1 +1,0 @@
-package qtype_test

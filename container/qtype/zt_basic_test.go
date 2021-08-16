@@ -1,206 +1,225 @@
 package qtype_test
 
 import (
+	"sync/atomic"
 	"testing"
+
+	"github.com/saitofun/qlib/container/qtype"
 )
 
-// var (
-// 	it    = qtype.NewInt()
-// 	it32  = qtype.NewInt32()
-// 	it64  = qtype.NewInt64()
-// 	uit   = qtype.NewUInt()
-// 	uit32 = qtype.NewUInt32()
-// 	uit64 = qtype.NewUInt64()
-// 	bl    = qtype.NewBool()
-// 	str   = qtype.NewString()
-// 	at    = atomic.Value{}
-// 	// inf = qtype.NewInterface()
-// 	// vbytes = qtype.NewBytes()
-// )
-//
-// func BenchmarkInt_Set(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		it.Set(i)
-// 	}
-// }
-//
-// func BenchmarkInt_Val(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		it.Val()
-// 	}
-// }
-//
-// func BenchmarkInt_Add(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		it.Add(i)
-// 	}
-// }
-//
-// func BenchmarkInt_CAS(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		it.CAS(i, i)
-// 	}
-// }
-//
-// func BenchmarkInt32_Set(b *testing.B) {
-// 	for i := int32(0); i < int32(b.N); i++ {
-// 		it32.Set(i)
-// 	}
-// }
-//
-// func BenchmarkInt32_Val(b *testing.B) {
-// 	for i := int32(0); i < int32(b.N); i++ {
-// 		it32.Val()
-// 	}
-// }
-//
-// func BenchmarkInt32_Add(b *testing.B) {
-// 	for i := int32(0); i < int32(b.N); i++ {
-// 		it32.Add(i)
-// 	}
-// }
-//
-// func BenchmarkInt64_Set(b *testing.B) {
-// 	for i := int64(0); i < int64(b.N); i++ {
-// 		it64.Set(i)
-// 	}
-// }
-//
-// func BenchmarkInt64_Val(b *testing.B) {
-// 	for i := int64(0); i < int64(b.N); i++ {
-// 		it64.Val()
-// 	}
-// }
-//
-// func BenchmarkInt64_Add(b *testing.B) {
-// 	for i := int64(0); i < int64(b.N); i++ {
-// 		it64.Add(i)
-// 	}
-// }
-//
-// func BenchmarkUint_Set(b *testing.B) {
-// 	for i := uint(0); i < uint(b.N); i++ {
-// 		uit.Set(i)
-// 	}
-// }
-//
-// func BenchmarkUint_Val(b *testing.B) {
-// 	for i := uint(0); i < uint(b.N); i++ {
-// 		uit.Val()
-// 	}
-// }
-//
-// func BenchmarkUint_Add(b *testing.B) {
-// 	for i := uint(0); i < uint(b.N); i++ {
-// 		uit.Add(i)
-// 	}
-// }
-//
-// func BenchmarkUint32_Set(b *testing.B) {
-// 	for i := uint32(0); i < uint32(b.N); i++ {
-// 		uit32.Set(i)
-// 	}
-// }
-//
-// func BenchmarkUint32_Val(b *testing.B) {
-// 	for i := uint32(0); i < uint32(b.N); i++ {
-// 		uit32.Val()
-// 	}
-// }
-//
-// func BenchmarkUint32_Add(b *testing.B) {
-// 	for i := uint32(0); i < uint32(b.N); i++ {
-// 		uit32.Add(i)
-// 	}
-// }
-//
-// func BenchmarkUint64_Set(b *testing.B) {
-// 	for i := uint64(0); i < uint64(b.N); i++ {
-// 		uit64.Set(i)
-// 	}
-// }
-//
-// func BenchmarkUint64_Val(b *testing.B) {
-// 	for i := uint64(0); i < uint64(b.N); i++ {
-// 		uit64.Val()
-// 	}
-// }
-//
-// func BenchmarkUint64_Add(b *testing.B) {
-// 	for i := uint64(0); i < uint64(b.N); i++ {
-// 		uit64.Add(i)
-// 	}
-// }
-//
-// func BenchmarkBool_Set(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		bl.Set(true)
-// 	}
-// }
-//
-// func BenchmarkBool_Val(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		bl.Val()
-// 	}
-// }
-//
-// func BenchmarkBool_CAS(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		bl.CAS(false, true)
-// 	}
-// }
-//
-// func BenchmarkString_Set(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		str.Set(strconv.Itoa(i))
-// 	}
-// }
-//
-// func BenchmarkString_Val(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		str.Val()
-// 	}
-// }
-//
-// func BenchmarkBytes_Set(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		vbytes.Set(gbinary.EncodeInt(i))
-// 	}
-// }
-//
-// func BenchmarkBytes_Val(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		vbytes.Val()
-// 	}
-// }
-//
-// func BenchmarkInterface_Set(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		inf.Set(i)
-// 	}
-// }
-//
-// func BenchmarkInterface_Val(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		inf.Val()
-// 	}
-// }
-//
-// func BenchmarkAtomicValue_Store(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		at.Store(i)
-// 	}
-// }
-//
-// func BenchmarkAtomicValue_Load(b *testing.B) {
-// 	for i := 0; i < b.N; i++ {
-// 		at.Load()
-// 	}
-// }
-//
+func BenchmarkAtomic_Store(b *testing.B) {
+	v := atomic.Value{}
+	for i := 0; i < b.N; i++ {
+		v.Store(i)
+	}
+}
 
-func Test___(t *testing.T) {
-	var i interface{} = "1"
-	var j string = "1"
-	t.Log(i == j)
+func BenchmarkAny_Set(b *testing.B) {
+	v := qtype.New()
+	for i := 0; i < b.N; i++ {
+		v.Set(i)
+	}
+}
+
+func BenchmarkBool_SetTure(b *testing.B) {
+	v := qtype.NewBool()
+	for i := 0; i < b.N; i++ {
+		v.Set(true)
+	}
+}
+
+func BenchmarkBool_SetFalse(b *testing.B) {
+	v := qtype.NewBool()
+	for i := 0; i < b.N; i++ {
+		v.Set(false)
+	}
+}
+
+func BenchmarkFloat32_Set(b *testing.B) {
+	v := qtype.NewFloat32()
+	for i := 0; i < b.N; i++ {
+		v.Set(float32(i))
+	}
+}
+
+func BenchmarkFloat64_Set(b *testing.B) {
+	v := qtype.NewFloat64()
+	for i := float64(0); i < float64(b.N); i++ {
+		v.Set(i)
+	}
+}
+
+func BenchmarkInt_Set(b *testing.B) {
+	v := qtype.NewInt()
+	for i := 0; i < b.N; i++ {
+		v.Set(i)
+	}
+}
+
+func BenchmarkInt8_Set(b *testing.B) {
+	v := qtype.NewInt8()
+	for i := int8(0); i < int8(b.N); i++ {
+		v.Set(i)
+	}
+}
+
+func BenchmarkInt16_Set(b *testing.B) {
+	v := qtype.NewInt16()
+	for i := 0; i < b.N; i++ {
+		v.Set(int16(i))
+	}
+}
+
+func BenchmarkInt32_Set(b *testing.B) {
+	v := qtype.NewInt32()
+	for i := int32(0); i < int32(b.N); i++ {
+		v.Set(i)
+	}
+}
+
+func BenchmarkInt64_Set(b *testing.B) {
+	v := qtype.NewInt64()
+	for i := 0; i < b.N; i++ {
+		v.Set(int64(i))
+	}
+}
+
+func BenchmarkUint_Set(b *testing.B) {
+	v := qtype.NewUInt()
+	for i := uint(0); i < uint(b.N); i++ {
+		v.Set(uint(i))
+	}
+}
+
+func BenchmarkUInt8_Set(b *testing.B) {
+	v := qtype.NewUInt8()
+	for i := 0; i < b.N; i++ {
+		v.Set(uint8(i))
+	}
+}
+
+func BenchmarkUInt16_Set(b *testing.B) {
+	v := qtype.NewUInt16()
+	for i := 0; i < b.N; i++ {
+		v.Set(uint16(i))
+	}
+}
+
+func BenchmarkUint32_Set(b *testing.B) {
+	v := qtype.NewUInt32()
+	for i := uint32(0); i < uint32(b.N); i++ {
+		v.Set(i)
+	}
+}
+
+func BenchmarkString_Set(b *testing.B) {
+	v := qtype.NewString()
+	for i := 0; i < b.N; i++ {
+		v.Set("")
+	}
+}
+
+func BenchmarkAtomic_Load(b *testing.B) {
+	v := atomic.Value{}
+	for i := 0; i < b.N; i++ {
+		v.Load()
+	}
+}
+
+func BenchmarkAny_Val(b *testing.B) {
+	v := qtype.New()
+	for i := 0; i < b.N; i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkBool_Val(b *testing.B) {
+	v := qtype.NewBool()
+	for i := 0; i < b.N; i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkFloat32_Val(b *testing.B) {
+	v := qtype.NewFloat32()
+	for i := 0; i < b.N; i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkFloat64_Val(b *testing.B) {
+	v := qtype.NewFloat64()
+	for i := float64(0); i < float64(b.N); i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkInt_Val(b *testing.B) {
+	v := qtype.NewInt()
+	for i := 0; i < b.N; i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkInt8_Val(b *testing.B) {
+	v := qtype.NewInt8()
+	for i := int8(0); i < int8(b.N); i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkInt16_Val(b *testing.B) {
+	v := qtype.NewInt16()
+	for i := 0; i < b.N; i++ {
+		v.Set(int16(i))
+	}
+}
+
+func BenchmarkInt32_Val(b *testing.B) {
+	v := qtype.NewInt32()
+	for i := int32(0); i < int32(b.N); i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkInt64_Val(b *testing.B) {
+	v := qtype.NewInt64()
+	for i := 0; i < b.N; i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkUint_Val(b *testing.B) {
+	v := qtype.NewUInt()
+	for i := uint(0); i < uint(b.N); i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkUInt8_Val(b *testing.B) {
+	v := qtype.NewUInt8()
+	for i := 0; i < b.N; i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkUInt16_Val(b *testing.B) {
+	v := qtype.NewUInt16()
+	for i := 0; i < b.N; i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkUint32_Val(b *testing.B) {
+	v := qtype.NewUInt32()
+	for i := uint32(0); i < uint32(b.N); i++ {
+		v.Val()
+	}
+}
+
+func BenchmarkString_Val(b *testing.B) {
+	v := qtype.NewString()
+	for i := 0; i < b.N; i++ {
+		v.Val()
+	}
 }
