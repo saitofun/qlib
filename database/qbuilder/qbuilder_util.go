@@ -6,10 +6,6 @@ import (
 	"github.com/saitofun/qlib/os/qsync"
 )
 
-func IsZero(v interface{}) bool {
-	return true
-}
-
 var ArgListCache = struct {
 	val map[int]string
 	mtx *sync.Mutex
@@ -39,7 +35,3 @@ func ArgListExpr(args ...interface{}) *expr {
 	}
 	return ret
 }
-
-func ArgList(arg ...interface{}) []interface{} { return arg }
-
-func Quoted(v string) string { return "(" + v + ")" }
