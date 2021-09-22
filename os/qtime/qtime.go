@@ -13,19 +13,18 @@ var (
 )
 
 const (
-	LogFormat     = "2006-01-02 15:04:05"
 	LogFormatNano = "2006-01-02 15:04:05.000"
-	Format        = time.RFC3339
 	FormatNano    = time.RFC3339Nano
-	GANsFormat    = "2006/01/02 15:04:05.000"
+	LogFormat     = "2006-01-02 15:04:05"
+	Format        = time.RFC3339
 )
 
 var Formats = []string{
-	GANsFormat,
-	LogFormat,
+	"2006/01/02 15:04:05.000",
 	LogFormatNano,
-	Format,
 	FormatNano,
+	LogFormat,
+	Format,
 }
 
 type Time struct {
