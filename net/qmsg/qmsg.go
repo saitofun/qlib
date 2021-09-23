@@ -16,7 +16,7 @@ type Message interface {
 
 type WithTimestamp interface {
 	GetTs() int64
-	SetTs(int64)
+	SetTs()
 }
 
 type WithErrorCheck interface {
