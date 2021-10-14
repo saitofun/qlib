@@ -37,8 +37,17 @@ func (q *unlimited) Push(v interface{}) {
 	}
 }
 
-func (q *unlimited) Pop() interface{} {
-	return <-q.qch
+func (q *unlimited) TryPush(v interface{}) bool { q.Push(v); return true }
+
+func (q *unlimited) Pop() interface{} { return <-q.qch }
+
+func (q *unlimited) TryPop() interface{} {
+	select {
+	case ret := <-q.qch:
+		return ret
+	default:
+		return nil
+	}
 }
 
 func (q *unlimited) Len() int {

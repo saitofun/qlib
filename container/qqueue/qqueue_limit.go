@@ -18,8 +18,26 @@ func (q *limited) Push(v interface{}) {
 	q.qch <- v
 }
 
+func (q *limited) TryPush(v interface{}) bool {
+	select {
+	case q.qch <- v:
+		return true
+	default:
+		return false
+	}
+}
+
 func (q *limited) Pop() interface{} {
 	return <-q.qch
+}
+
+func (q *limited) TryPop() interface{} {
+	select {
+	case ret := <-q.qch:
+		return ret
+	default:
+		return nil
+	}
 }
 
 func (q *limited) Len() int {
