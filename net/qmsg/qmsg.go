@@ -14,6 +14,10 @@ type Message interface {
 	Type() Type
 }
 
+type NamedMessage interface {
+	Name() string
+}
+
 type WithTimestamp interface {
 	GetTs() int64
 	SetTs()
