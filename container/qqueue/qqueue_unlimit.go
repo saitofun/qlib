@@ -50,6 +50,12 @@ func (q *unlimited) TryPop() interface{} {
 	}
 }
 
+func (q *unlimited) WaitPop() <-chan interface{} {
+	ret := make(chan interface{}, 1)
+	ret <- q.Pop()
+	return ret
+}
+
 func (q *unlimited) Len() int {
 	return len(q.qch) + len(q.act)
 }

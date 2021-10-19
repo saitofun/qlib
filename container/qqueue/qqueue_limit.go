@@ -40,6 +40,12 @@ func (q *limited) TryPop() interface{} {
 	}
 }
 
+func (q *limited) WaitPop() <-chan interface{} {
+	ret := make(chan interface{}, 1)
+	ret <- q.Pop()
+	return ret
+}
+
 func (q *limited) Len() int {
 	if q.closed.Val() {
 		return 0
