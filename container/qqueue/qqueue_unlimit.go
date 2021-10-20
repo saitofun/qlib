@@ -2,6 +2,7 @@ package qqueue
 
 import (
 	"math"
+	"time"
 
 	"github.com/saitofun/qlib/container/qlist"
 	"github.com/saitofun/qlib/container/qtype"
@@ -50,10 +51,13 @@ func (q *unlimited) TryPop() interface{} {
 	}
 }
 
-func (q *unlimited) WaitPop() <-chan interface{} {
-	ret := make(chan interface{}, 1)
-	ret <- q.Pop()
-	return ret
+func (q *unlimited) WaitPop(d time.Duration) interface{} {
+	select {
+	case <-time.After(d):
+		return nil
+	case ret := <-q.qch:
+		return ret
+	}
 }
 
 func (q *unlimited) Len() int {

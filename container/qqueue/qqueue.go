@@ -1,11 +1,13 @@
 package qqueue
 
+import "time"
+
 type Queue interface {
 	Push(v interface{})
 	TryPush(v interface{}) bool
 	Pop() interface{}
 	TryPop() interface{}
-	WaitPop() <-chan interface{}
+	WaitPop(time.Duration) interface{}
 	Len() int
 	Close()
 	Closed() bool

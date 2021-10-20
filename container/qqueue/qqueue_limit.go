@@ -1,6 +1,10 @@
 package qqueue
 
-import "github.com/saitofun/qlib/container/qtype"
+import (
+	"time"
+
+	"github.com/saitofun/qlib/container/qtype"
+)
 
 type limited struct {
 	qch    chan interface{}
@@ -40,10 +44,13 @@ func (q *limited) TryPop() interface{} {
 	}
 }
 
-func (q *limited) WaitPop() <-chan interface{} {
-	ret := make(chan interface{}, 1)
-	ret <- q.Pop()
-	return ret
+func (q *limited) WaitPop(d time.Duration) interface{} {
+	select {
+	case <-time.After(d):
+		return nil
+	case ret := <-q.qch:
+		return ret
+	}
 }
 
 func (q *limited) Len() int {
