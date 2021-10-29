@@ -48,6 +48,7 @@ func (t Time) LogFormat() string {
 }
 
 func (t Time) MarshalJSON() ([]byte, error) {
+	t.Round(0)
 	if t.IsZero() {
 		return []byte(`""`), nil
 	}
@@ -79,6 +80,11 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 	return err
 }
 
+func (t Time) MarshalText() ([]byte, error) {
+	t.Round(0)
+	return []byte(t.String()), nil
+}
+
 func (t *Time) UnmarshalText(data []byte) (err error) {
 	str := string(data)
 	if len(str) == 0 || str == "0" {
@@ -86,10 +92,6 @@ func (t *Time) UnmarshalText(data []byte) (err error) {
 	}
 	*t, err = Parse(str)
 	return
-}
-
-func (t Time) MarshalText() ([]byte, error) {
-	return []byte(t.String()), nil
 }
 
 func (t *Time) IsZero() bool {
