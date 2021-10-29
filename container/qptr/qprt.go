@@ -12,3 +12,4 @@ func NewUint32(v uint32) *uint32    { return &v }
 func NewUint64(v uint64) *uint64    { return &v }
 func NewFloat32(v float32) *float32 { return &v }
 func NewFloat64(v float64) *float64 { return &v }
+func NewString(v string) *string    { return &v }
