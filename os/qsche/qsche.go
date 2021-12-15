@@ -27,13 +27,13 @@ func (f FnWithRes) Do() (interface{}, error) { return f() }
 // Job sche schedule unit
 type Job interface{ Do() (interface{}, error) }
 
-// Result job resc
+// Result job result
 type Result struct {
 	Val interface{}
 	error
 }
 
-// Scheduler scheduler without worker operations
+// Scheduler scheduler
 type Scheduler interface {
 	Start()
 	Run()
@@ -43,7 +43,7 @@ type Scheduler interface {
 	WithContext(ctx context.Context) Scheduler
 }
 
-// WorkersScheduler worker manage and schedule control
+// WorkersScheduler scheduler with worker
 type WorkersScheduler interface {
 	Scheduler
 	Add(Job) *Context

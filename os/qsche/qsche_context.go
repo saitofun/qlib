@@ -10,7 +10,7 @@ import (
 type Context struct {
 	stat                   // stat commit,committed,execute,finished
 	deadline *qtime.Time   // deadline context deadline
-	resc     chan *Result  // resc result chan
+	result   chan *Result  // result chan
 	res      *Result       // res result
 	done     chan struct{} // done context done chan
 	seq      int64         // seq job sequence in workers pool
@@ -19,11 +19,11 @@ type Context struct {
 
 func NewContext(j Job, seq int64) *Context {
 	ret := &Context{
-		Job:  j,
-		resc: make(chan *Result, 1),
-		res:  &Result{},
-		done: make(chan struct{}, 1),
-		seq:  seq,
+		Job:    j,
+		result: make(chan *Result, 1),
+		res:    &Result{},
+		done:   make(chan struct{}, 1),
+		seq:    seq,
 	}
 	ret.stat[0] = qtime.NewTime()
 	return ret
@@ -59,7 +59,7 @@ func (c *Context) Exec(ctx context.Context) {
 		c.res = &Result{}
 		c.res.Val, c.res.error = c.Job.Do()
 		c.stat[2] = qtime.NewTime()
-		c.resc <- c.res
+		c.result <- c.res
 	}
 	c.done <- struct{}{}
 }
@@ -75,7 +75,7 @@ func (c *Context) WithTimeout(timeout time.Duration) *Context {
 }
 
 func (c *Context) Result() (interface{}, error) {
-	r := <-c.resc
+	r := <-c.result
 	return r.Val, r.error
 }
 

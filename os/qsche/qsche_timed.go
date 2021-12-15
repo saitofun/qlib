@@ -16,11 +16,10 @@ type timed struct {
 	cancel  context.CancelFunc
 }
 
-func NewTimedScheduler(id string, fn func(), du time.Duration) Scheduler {
+func NewTimedScheduler(fn func(), du time.Duration) Scheduler {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &timed{
 		started: qtype.NewBool(),
-		id:      id,
 		du:      du,
 		fn:      fn,
 		ctx:     ctx,
@@ -29,7 +28,7 @@ func NewTimedScheduler(id string, fn func(), du time.Duration) Scheduler {
 }
 
 func RunTimedScheduler(id string, fn func(), du time.Duration) Scheduler {
-	ret := NewTimedScheduler(id, fn, du)
+	ret := NewTimedScheduler(fn, du)
 	ret.Run()
 	return ret
 }

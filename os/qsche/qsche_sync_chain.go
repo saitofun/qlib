@@ -14,19 +14,18 @@ type chain struct {
 	cancel  context.CancelFunc
 }
 
-func NewChainedScheduler(id string, lmt ...int) WorkersScheduler {
+func NewChainedScheduler(lmt ...int) WorkersScheduler {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &chain{
 		Workers: NewWorkers(lmt...),
-		id:      id,
 		started: qtype.NewBool(),
 		ctx:     ctx,
 		cancel:  cancel,
 	}
 }
 
-func RunChainedScheduler(id string, lmt ...int) WorkersScheduler {
-	ret := NewChainedScheduler(id, lmt...)
+func RunChainedScheduler(lmt ...int) WorkersScheduler {
+	ret := NewChainedScheduler(lmt...)
 	ret.Run()
 	return ret
 }

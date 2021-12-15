@@ -61,7 +61,7 @@ func (q *limited) Len() int {
 }
 
 func (q *limited) Close() {
-	q.closed.Set(false)
+	q.closed.Set(true)
 	close(q.qch)
 }
 
