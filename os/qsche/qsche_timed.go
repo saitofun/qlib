@@ -9,14 +9,13 @@ import (
 
 type timed struct {
 	started *qtype.Bool
-	id      string
 	du      time.Duration
-	fn      func()
+	fn      Job
 	ctx     context.Context
 	cancel  context.CancelFunc
 }
 
-func NewTimedScheduler(fn func(), du time.Duration) Scheduler {
+func NewTimedScheduler(fn Job, du time.Duration) Scheduler {
 	ctx, cancel := context.WithCancel(context.Background())
 	return &timed{
 		started: qtype.NewBool(),
@@ -27,8 +26,8 @@ func NewTimedScheduler(fn func(), du time.Duration) Scheduler {
 	}
 }
 
-func RunTimedScheduler(id string, fn func(), du time.Duration) Scheduler {
-	ret := NewTimedScheduler(fn, du)
+func RunTimedScheduler(j Job, du time.Duration) Scheduler {
+	ret := NewTimedScheduler(j, du)
 	ret.Run()
 	return ret
 }
@@ -49,7 +48,7 @@ func (t *timed) Start() {
 			case <-t.ctx.Done():
 				return
 			case <-time.After(t.du):
-				go t.fn()
+				go t.fn.Do()
 			}
 		}
 	}
