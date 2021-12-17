@@ -17,7 +17,8 @@ type ClientOption struct {
 	writeBufferSize int           // socket option for write buffer size
 	nodeID          string        // client identifier
 	workerPoolSize  int           // limited concurrent worker
-	onConnected     func(*Client) // udp ignored
+	onConnected     func(*Node)   // udp ignored
+	onDisconnected  func(*Node)   //
 	routes          *Routes       // bind message type and handler
 	handler         Handler       // common handler to invoke business API
 }
@@ -84,9 +85,15 @@ func ClientOptionWorkerPoolSize(v int) ClientOptionSetter {
 	}
 }
 
-func ClientOptionOnConnected(f func(*Client)) ClientOptionSetter {
+func ClientOptionOnConnected(f func(*Node)) ClientOptionSetter {
 	return func(o *ClientOption) {
 		o.onConnected = f
+	}
+}
+
+func ClientOptionOnDisconnected(f func(*Node)) ClientOptionSetter {
+	return func(o *ClientOption) {
+		o.onDisconnected = f
 	}
 }
 

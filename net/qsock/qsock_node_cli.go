@@ -75,7 +75,7 @@ func NewClient(options ...ClientOptionSetter) (*Client, error) {
 	cli.node = n
 
 	if cli.onConnected != nil {
-		cli.onConnected(cli)
+		cli.onConnected(n)
 	}
 
 	return cli, nil
@@ -103,6 +103,9 @@ func (c *Client) Request(req qmsg.Message) (qmsg.Message, error) {
 
 func (c *Client) Close(reason ...interface{}) {
 	c.node.Stop(reason...)
+	if c.onDisconnected != nil {
+		c.onDisconnected(c.node)
+	}
 }
 
 func (c *Client) IsClosed() bool {
