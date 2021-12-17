@@ -61,7 +61,7 @@ func NewClient(options ...ClientOptionSetter) (*Client, error) {
 	}
 	n.id = cli.nodeID
 	if cli.routes != nil || cli.handler != nil {
-		n.worker = qsche.RunConScheduler("sock.cli.wkr", cli.workerPoolSize)
+		n.worker = qsche.RunConScheduler(cli.workerPoolSize)
 	}
 	n.routes = cli.routes
 	n.handler = cli.handler
@@ -72,10 +72,11 @@ func NewClient(options ...ClientOptionSetter) (*Client, error) {
 	n.sq = make(chan qmsg.Message, 1024)
 
 	n.Run()
-	for _, h := range cli.onConnected {
-		h(n)
-	}
 	cli.node = n
+
+	if cli.onConnected != nil {
+		cli.onConnected(cli)
+	}
 
 	return cli, nil
 }

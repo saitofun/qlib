@@ -26,7 +26,7 @@ func NewConScheduler(concurrency int) WorkersScheduler {
 	}
 }
 
-func RunConScheduler(id string, concurrency int) WorkersScheduler {
+func RunConScheduler(concurrency int) WorkersScheduler {
 	ret := NewConScheduler(concurrency)
 	ret.Run()
 	return ret
