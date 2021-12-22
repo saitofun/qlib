@@ -12,6 +12,7 @@ const defaultPoolLimit = 64
 
 type Workers struct {
 	q   qqueue.Queue
+	lmt int
 	seq *qtype.Int64
 }
 
@@ -20,8 +21,10 @@ func NewWorkers(lmt ...int) *Workers {
 	if len(lmt) > 0 && lmt[0] > 0 {
 		limit = lmt[0]
 	}
-	return &Workers{q: qqueue.NewLimited(limit), seq: qtype.NewInt64()}
+	return &Workers{q: qqueue.NewLimited(limit), lmt: limit, seq: qtype.NewInt64()}
 }
+
+func (p *Workers) Limit() int { return p.lmt }
 
 func (p *Workers) Add(j Job) (ctx *Context) {
 	ctx = NewContext(j, p.seq.Add(1))

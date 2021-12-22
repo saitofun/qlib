@@ -2,6 +2,7 @@ package qsche
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/saitofun/qlib/container/qtype"
 )
@@ -28,6 +29,10 @@ func RunChainedScheduler(lmt ...int) WorkersScheduler {
 	ret := NewChainedScheduler(lmt...)
 	ret.Run()
 	return ret
+}
+
+func (c *chain) Desc() string {
+	return fmt.Sprintf("CHAINED: %d", c.Workers.Limit())
 }
 
 func (c *chain) Context() context.Context { return c.ctx }

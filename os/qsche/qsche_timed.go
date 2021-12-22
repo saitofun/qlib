@@ -2,6 +2,7 @@ package qsche
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/saitofun/qlib/container/qtype"
@@ -30,6 +31,10 @@ func RunTimedScheduler(j Job, du time.Duration) Scheduler {
 	ret := NewTimedScheduler(j, du)
 	ret.Run()
 	return ret
+}
+
+func (t *timed) Desc() string {
+	return fmt.Sprintf("TIMED: %s", t.du)
 }
 
 func (t *timed) Context() context.Context { return t.ctx }

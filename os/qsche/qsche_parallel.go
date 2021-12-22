@@ -2,6 +2,7 @@ package qsche
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/saitofun/qlib/container/qtype"
 	"github.com/saitofun/qlib/os/qsync"
@@ -30,6 +31,10 @@ func RunConScheduler(concurrency int) WorkersScheduler {
 	ret := NewConScheduler(concurrency)
 	ret.Run()
 	return ret
+}
+
+func (c *concurrent) Desc() string {
+	return fmt.Sprintf("CONC: %d", c.con)
 }
 
 func (c *concurrent) Context() context.Context { return c.ctx }
