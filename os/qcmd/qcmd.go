@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/saitofun/qlib/encoding"
 )
@@ -91,6 +92,26 @@ func (c *Cmd) Launch(args ...string) {
 		}
 		c.err = c.cmd.Wait()
 	}()
+	for {
+		time.Sleep(time.Second)
+		if c.cmd.Process != nil {
+			return
+		}
+	}
+}
+
+func (c *Cmd) Stop() {
+	if c.cmd == nil {
+		return
+	}
+	_, exited := c.State()
+	if exited {
+		return
+	}
+	if c.cmd.Process != nil {
+		_ = syscall.Kill(c.cmd.Process.Pid, syscall.SIGKILL)
+	}
+	return
 }
 
 // State return command exit code and exited
@@ -104,9 +125,16 @@ func (c *Cmd) State() (error, bool) {
 	return nil, false
 }
 
+func (c *Cmd) Kill() error {
+	if c.cmd != nil && c.cmd.Process != nil {
+		return c.cmd.Process.Kill()
+	}
+	return nil
+}
+
 func (c *Cmd) Pid() int {
-	if c.cmd != nil && c.cmd.ProcessState != nil {
-		return c.cmd.ProcessState.Pid()
+	if c.cmd != nil && c.cmd.Process != nil {
+		return c.cmd.Process.Pid
 	}
 	return 0
 }
