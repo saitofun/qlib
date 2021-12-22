@@ -125,11 +125,17 @@ func (c *Cmd) State() (error, bool) {
 	return nil, false
 }
 
-func (c *Cmd) Kill() error {
+func (c *Cmd) Kill() (err error) {
 	if c.cmd != nil && c.cmd.Process != nil {
-		return c.cmd.Process.Kill()
+		err = c.cmd.Process.Kill()
+		for {
+			if c.cmd.ProcessState != nil {
+				break
+			}
+			time.Sleep(time.Second)
+		}
 	}
-	return nil
+	return
 }
 
 func (c *Cmd) Pid() int {
