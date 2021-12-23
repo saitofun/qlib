@@ -48,6 +48,7 @@ func (t *timed) Started() bool { return t.started.Val() }
 
 func (t *timed) Start() {
 	if t.started.CAS(false, true) {
+		go t.fn.Do()
 		for {
 			select {
 			case <-t.ctx.Done():
