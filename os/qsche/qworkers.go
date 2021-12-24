@@ -56,3 +56,5 @@ func (p *Workers) Pop() *Context {
 func (p *Workers) Close() { p.q.Close() }
 
 func (p *Workers) Closed() bool { return p.q.Closed() }
+
+func (p *Workers) Len() int { return p.q.Len() }
