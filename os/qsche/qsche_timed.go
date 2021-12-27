@@ -65,3 +65,7 @@ func (t *timed) Run() { go t.Start() }
 func (t *timed) Stop() {
 	t.cancel()
 }
+
+func (t *timed) Value() interface{} {
+	return t.fn
+}
