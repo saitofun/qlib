@@ -26,7 +26,8 @@ func New(v ...interface{}) *List {
 }
 
 func NewSafe(v ...interface{}) *List {
-	ret := (&List{mu: rwmutex.RWMutex{RWMutex: &sync.RWMutex{}}}).Init()
+	ret := New(v...)
+	ret.mu = rwmutex.RWMutex{RWMutex: &sync.RWMutex{}}
 	for i := range v {
 		ret.List.PushBack(v[i])
 	}
@@ -44,14 +45,14 @@ func (l *List) Init() *List {
 }
 
 func (l *List) Len() int {
-	l.rLock()
-	defer l.rUnlock()
+	l.mu.RLock()
+	defer l.mu.RUnlock()
 	return l.List.Len()
 }
 
 func (l *List) PushFront(v interface{}) *Element {
-	l.lock()
-	defer l.unlock()
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	return l.List.PushFront(v)
 }
 

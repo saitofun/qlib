@@ -1,3 +1,3 @@
 package qtree
 
-type AVLTree struct{}
+type AVL struct{}

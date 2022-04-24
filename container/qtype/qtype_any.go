@@ -7,9 +7,7 @@ import (
 	"github.com/saitofun/qlib/encoding/qjson"
 )
 
-type Any struct {
-	v atomic.Value
-}
+type Any struct{ v atomic.Value }
 
 func New() *Any {
 	return &Any{}

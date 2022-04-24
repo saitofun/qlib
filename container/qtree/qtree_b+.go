@@ -1,3 +1,3 @@
 package qtree
 
-type BTree struct{}
+type B struct{}
