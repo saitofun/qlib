@@ -2,8 +2,6 @@ package qtime
 
 import (
 	"time"
-
-	_ "github.com/uniplaces/carbon"
 )
 
 func (t Time) Today() Time {
