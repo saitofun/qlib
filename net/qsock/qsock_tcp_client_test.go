@@ -16,27 +16,27 @@ func TestTCPClient(t *testing.T) {
 		qsock.ClientOptionParser(TCPParser),
 		qsock.ClientOptionRemote("localhost:10086"),
 		qsock.ClientOptionProtocol(qsock.ProtocolTCP),
-		qsock.ClientOptionOnConnected(func(n *qsock.Node) {
-			req.Content = "first greeting req"
-			for {
-				req.Renew()
-				rsp, err := n.Request(req, 2*time.Second)
-				if err != nil {
-					fmt.Printf("cli: OnConnected error:%v\n", err)
-					if qsock.IsTimeoutError(err) {
-						continue
-					}
-					if qsock.IsNodeClosedError(err) {
-						break
-					}
-				}
-				msg, ok := rsp.(*GreetingRsp)
-				if ok && msg.Content == "first greeting rsp" {
-					fmt.Println("OnConnected done")
-					break
-				}
-			}
-		}),
+		// qsock.ClientOptionOnConnected(func(n *qsock.Node) {
+		// 	req.Content = "first greeting req"
+		// 	for {
+		// 		req.Renew()
+		// 		rsp, err := n.Request(req, 2*time.Second)
+		// 		if err != nil {
+		// 			fmt.Printf("cli: OnConnected error:%v\n", err)
+		// 			if qsock.IsTimeoutError(err) {
+		// 				continue
+		// 			}
+		// 			if qsock.IsNodeClosedError(err) {
+		// 				break
+		// 			}
+		// 		}
+		// 		msg, ok := rsp.(*GreetingRsp)
+		// 		if ok && msg.Content == "first greeting rsp" {
+		// 			fmt.Println("OnConnected done")
+		// 			break
+		// 		}
+		// 	}
+		// }),
 		qsock.ClientOptionRoute(rsp.Type(), func(ev *qsock.Event) {
 			fmt.Printf("route -> %s\n", qjson.UnsafeMarshal(ev.Payload()))
 		}),

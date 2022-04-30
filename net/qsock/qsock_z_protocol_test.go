@@ -194,7 +194,7 @@ func HandleGreeting(ev *qsock.Event) {
 	if ev == nil || ev.Payload() == nil {
 		return
 	}
-	ep := ev.Endpoint()
+	ep := ev.Node()
 	pl := ev.Payload()
 	rsp.RenewWithID(pl.ID())
 	fmt.Printf("%v -> %s\n", ep.ID(), qjson.UnsafeMarshal(pl))

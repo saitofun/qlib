@@ -13,13 +13,9 @@ func NewEvent(node *Node, pld qmsg.Message) *Event {
 	return &Event{node, pld}
 }
 
-func (ev *Event) From() *Node {
-	return ev.node
-}
+func (ev *Event) Node() *Node { return ev.node }
 
-func (ev *Event) Payload() qmsg.Message {
-	return ev.payload
-}
+func (ev *Event) Payload() qmsg.Message { return ev.payload }
 
 func (ev *Event) Response(rsp qmsg.Message) error {
 	return ev.node.WriteMessage(rsp)
@@ -28,6 +24,3 @@ func (ev *Event) Response(rsp qmsg.Message) error {
 func (ev *Event) Send(msg qmsg.Message) error {
 	return ev.node.SendMessage(msg)
 }
-
-// Endpoint for trace only
-func (ev *Event) Endpoint() *Node { return ev.node }

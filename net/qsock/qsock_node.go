@@ -39,6 +39,8 @@ type Node struct {
 	protocol  ProtocolType
 	closed    *qtype.Bool
 	reason    string
+	debug     bool
+	output    func(interface{})
 }
 
 func NewNode() *Node {
@@ -114,7 +116,7 @@ func (n *Node) WriteRaw(msg []byte) (int, error) {
 	return n.write(msg)
 }
 
-// SendMessage send message to send queue
+// SendMessage push message to send queue
 func (n *Node) SendMessage(msg qmsg.Message) (err error) {
 	if n.closed.Val() {
 		return ENodeClosed
@@ -199,6 +201,7 @@ func (n *Node) send() {
 	)
 
 	defer func() {
+		fmt.Printf("[qsock.send] error %v", err)
 		n.Stop(err)
 	}()
 
@@ -212,6 +215,9 @@ func (n *Node) send() {
 		if msg == nil {
 			err = ENodeMessage
 			return
+		}
+		if n.debug && n.output != nil {
+			n.output(msg)
 		}
 		if err = n.WriteMessage(msg); err != nil {
 			e := errors.Unwrap(err)

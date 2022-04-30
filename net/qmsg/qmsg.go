@@ -19,8 +19,7 @@ type NamedMessage interface {
 }
 
 type WithTimestamp interface {
-	GetTs() int64
-	SetTs()
+	GetTimestamp() int64
 }
 
 type WithErrorCheck interface {

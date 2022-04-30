@@ -93,7 +93,7 @@ func (s *Server) buffers() (qbuf.Buffer, qbuf.Buffer) {
 	return qbuf_packet.New(s.readBufferCap), qbuf_packet.New(s.writeBufferCap)
 }
 
-func (s *Server) newNode(conn net.Conn, addr net.Addr) *Node {
+func (s *Server) income(conn net.Conn, addr net.Addr) *Node {
 	n := NewNode()
 	n.rq = make(chan qmsg.Message, 1024)
 	n.sq = make(chan qmsg.Message, 1024)
@@ -133,7 +133,9 @@ func (s *Server) run() {
 				fmt.Printf("option: %v\n", err)
 				continue
 			}
-			n := s.newNode(conn, nil)
+			n := s.income(conn, nil)
+			n.id = fmt.Sprintf("[%s - %s - %s]",
+				s.ln.Addr().Network(), s.ln.Addr(), conn.RemoteAddr())
 			fmt.Printf("client: %v connected\n", n.id)
 		}
 	} else {
@@ -156,7 +158,7 @@ func (s *Server) run() {
 			}
 			n = s.mgr.Get(addr.String())
 			if n == nil {
-				n = s.newNode(s.udp, addr)
+				n = s.income(s.udp, addr)
 				fmt.Printf("client: %v newNode created\n", n.id)
 			}
 			if err = n.rb.ResetAndWrite(buf[0:size]); err != nil {

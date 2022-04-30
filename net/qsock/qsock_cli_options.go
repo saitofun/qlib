@@ -21,6 +21,8 @@ type ClientOption struct {
 	onDisconnected  func(*Node)   //
 	routes          *Routes       // bind message type and handler
 	handler         Handler       // common handler to invoke business API
+	debug           bool
+	output          func(interface{})
 }
 
 type ClientOptionSetter func(*ClientOption)
@@ -103,6 +105,13 @@ func ClientOptionRoute(t qmsg.Type, h ...Handler) ClientOptionSetter {
 			o.routes = NewRoutes()
 		}
 		o.routes.Register(t, h...)
+	}
+}
+
+func ClientOptionDebugMode(output func(interface{})) ClientOptionSetter {
+	return func(o *ClientOption) {
+		o.debug = true
+		o.output = output
 	}
 }
 

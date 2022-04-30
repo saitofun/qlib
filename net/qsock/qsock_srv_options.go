@@ -21,6 +21,8 @@ type ServerOption struct {
 	workerPoolSize  int
 	routes          *Routes
 	handler         Handler
+	debug           bool
+	output          func(interface{})
 }
 
 type ServerOptionSetter func(*ServerOption)
@@ -103,6 +105,13 @@ func ServerOptionRoute(t qmsg.Type, h ...Handler) ServerOptionSetter {
 func ServerOptionHandler(h Handler) ServerOptionSetter {
 	return func(o *ServerOption) {
 		o.handler = h
+	}
+}
+
+func ServerOptionDebugMode(output func(interface{})) ServerOptionSetter {
+	return func(o *ServerOption) {
+		o.debug = true
+		o.output = output
 	}
 }
 

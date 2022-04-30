@@ -1,6 +1,7 @@
 package qsock
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -23,11 +24,12 @@ func (cs *clients) New(n *Node) {
 	defer cs.Unlock()
 
 	cs.connections[n.ID()] = n
+	fmt.Printf("[asock.clients] new node added `%s`", n.id)
 
 	go func(n *Node) {
 		defer cs.Remove(n.ID())
 		for {
-			if n.closed.Val(){
+			if n.closed.Val() {
 				return
 			}
 			msg, _ := n.ReadMessage(0)
@@ -45,6 +47,7 @@ func (cs *clients) Remove(id string, reason ...interface{}) {
 
 	n := cs.connections[id]
 	if n != nil {
+		fmt.Printf("[asock.clients] node leave `%s`", n.id)
 		n.Stop(reason...)
 	}
 	delete(cs.connections, id)
@@ -60,10 +63,13 @@ func (cs *clients) Get(id string) *Node {
 	return nil
 }
 
-func (cs *clients) Length() (int, int) {
+func (cs *clients) Stats() (int, int) {
 	cs.RLock()
 	defer cs.RUnlock()
-	return len(cs.connections), len(cs.events)
+
+	connections, events := len(cs.connections), len(cs.events)
+	fmt.Printf("[asock.clients] connections: %d, events: %d", connections, events)
+	return connections, events
 }
 
 func (cs *clients) Reset() {
@@ -76,13 +82,4 @@ func (cs *clients) Reset() {
 		}
 		delete(cs.connections, id)
 	}
-}
-
-func (cs *clients) SetNodeKey(id, key string) {
-	cs.Lock()
-	defer cs.Unlock()
-	node := cs.connections[id]
-	delete(cs.connections, id)
-	cs.connections[key] = node
-	node.id = key
 }
