@@ -114,7 +114,7 @@ func (s *Server) income(conn net.Conn, addr net.Addr) *Node {
 			f(n)
 		}
 	}
-	s.mgr.New(n)
+	s.mgr.New(n, s.onDisconnected...)
 	return n
 }
 

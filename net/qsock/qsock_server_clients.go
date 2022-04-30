@@ -19,7 +19,7 @@ func NewClientManager() *clients {
 	}
 }
 
-func (cs *clients) New(n *Node) {
+func (cs *clients) New(n *Node, onDisconnected ...func(*Node)) {
 	cs.Lock()
 	defer cs.Unlock()
 
@@ -28,6 +28,11 @@ func (cs *clients) New(n *Node) {
 
 	go func(n *Node) {
 		defer cs.Remove(n.ID())
+		defer func() {
+			for _, f := range onDisconnected {
+				f(n)
+			}
+		}()
 		for {
 			if n.closed.Val() {
 				return

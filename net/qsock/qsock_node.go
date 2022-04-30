@@ -14,12 +14,6 @@ import (
 	"github.com/saitofun/qlib/os/qsche"
 )
 
-type NodeTask struct {
-	msg qmsg.Message
-	src *Node
-	dst []net.Addr
-}
-
 type Node struct {
 	c         net.Conn
 	addr      net.Addr
