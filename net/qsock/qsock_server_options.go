@@ -18,6 +18,7 @@ type ServerOption struct {
 	readBufferSize  int
 	writeBufferSize int
 	onConnected     []func(*Node) // udp ignored
+	onDisconnected  []func(*Node)
 	workerPoolSize  int
 	routes          *Routes
 	handler         Handler
@@ -72,6 +73,12 @@ func ServerOptionWriteBufferCap(v int) ServerOptionSetter {
 func ServerOptionOnConnected(f func(*Node)) ServerOptionSetter {
 	return func(o *ServerOption) {
 		o.onConnected = append(o.onConnected, f)
+	}
+}
+
+func ServerOptionOnDisconnected(f func(*Node)) ServerOptionSetter {
+	return func(o *ServerOption) {
+		o.onDisconnected = append(o.onDisconnected, f)
 	}
 }
 

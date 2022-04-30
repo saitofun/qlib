@@ -201,7 +201,7 @@ func (n *Node) send() {
 	)
 
 	defer func() {
-		fmt.Printf("[qsock.send] error %v", err)
+		fmt.Printf("[qsock.send] error %v\n", err)
 		n.Stop(err)
 	}()
 
