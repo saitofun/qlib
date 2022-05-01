@@ -117,7 +117,7 @@ func (l *List) FrontN(n int) (ret []interface{}) {
 	defer l.unlock()
 	iter := l.List.Front()
 	for i := 0; i < n; i++ {
-		if iter.Next() == nil {
+		if iter == nil {
 			break
 		}
 		ret = append(ret, iter.Value)
