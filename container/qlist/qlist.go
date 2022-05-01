@@ -112,6 +112,20 @@ func (l *List) PopFrontN(n int) (ret []interface{}) {
 	return
 }
 
+func (l *List) FrontN(n int) (ret []interface{}) {
+	l.lock()
+	defer l.unlock()
+	iter := l.List.Front()
+	for i := 0; i < n; i++ {
+		if iter.Next() == nil {
+			break
+		}
+		ret = append(ret, iter.Value)
+		iter = iter.Next()
+	}
+	return ret
+}
+
 func (l *List) PopBack() interface{} {
 	l.lock()
 	defer l.unlock()
