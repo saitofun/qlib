@@ -3,22 +3,27 @@ package qstrings_test
 import (
 	"testing"
 
+	. "github.com/onsi/gomega"
 	"github.com/saitofun/qlib/util/qstrings"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_SplitToWords(t *testing.T) {
-	sentences := []string{
-		"IAmA10YearsSenior",
-		"I Am A 10 Years Senior",
-		". I_ Am_A_10_Years____Senior__",
-		"I-~~ Am\nA\t10 Years *** Senior",
-	}
 	words := []string{"I", "Am", "A", "10", "Years", "Senior"}
-
-	tr := require.New(t)
-
-	for i := range sentences {
-		tr.Equal(words, qstrings.SplitToWords(sentences[i]))
+	cases := []struct {
+		phrase string
+		words  []string
+	}{
+		{"IAmA10YearsSenior", words},
+		{"I Am A 10 Years Senior", words},
+		{". I_ Am_A_10_Years____Senior__", words},
+		{"I-~~ Am\nA\t10 Years *** Senior", words},
+		{"lowercase", []string{"lowercase"}},
+		{"Class", []string{"Class"}},
+		{"MyClass", []string{"My", "Class"}},
+		{"HTML", []string{"HTML"}},
+		{"QOSType", []string{"QOS", "Type"}},
+	}
+	for _, c := range cases {
+		NewWithT(t).Expect(qstrings.SplitToWords(c.phrase)).To(Equal(c.words))
 	}
 }
