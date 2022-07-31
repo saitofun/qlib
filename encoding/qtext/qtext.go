@@ -1,15 +1,16 @@
 package qtext
 
 import (
+	"bytes"
 	"encoding"
-	"fmt"
+	"encoding/base64"
 	"reflect"
 	"strconv"
 
 	"github.com/pkg/errors"
 )
 
-func MarshalText(v interface{}) ([]byte, error) {
+func MarshalText(v interface{}, useBase64 ...bool) ([]byte, error) {
 	if rv, ok := v.(reflect.Value); ok {
 		for rv.Kind() == reflect.Ptr {
 			if rv.IsNil() {
@@ -33,6 +34,9 @@ func MarshalText(v interface{}) ([]byte, error) {
 
 	switch x := v.(type) {
 	case []byte:
+		if len(useBase64) > 0 && useBase64[0] {
+			return ToBase64(x), nil
+		}
 		return x, nil
 	case string:
 		return []byte(x), nil
@@ -74,7 +78,11 @@ func MarshalText(v interface{}) ([]byte, error) {
 
 		switch rv.Kind() {
 		case reflect.Slice:
-			if rv.Type().Elem().Kind() == reflect.Uint8 {
+			elem := rv.Type().Elem()
+			if elem.Kind() == reflect.Uint8 && elem.PkgPath() == "" {
+				if len(useBase64) > 0 && useBase64[0] {
+					return ToBase64(rv.Bytes()), nil
+				}
 				return rv.Bytes(), nil
 			}
 		case reflect.String:
@@ -90,12 +98,11 @@ func MarshalText(v interface{}) ([]byte, error) {
 		case reflect.Bool:
 			return strconv.AppendBool([]byte{}, rv.Bool()), nil
 		}
-
-		return nil, fmt.Errorf("unsupported type %T", x)
+		return nil, errors.Errorf("unsupported type %T", x)
 	}
 }
 
-func UnmarshalText(v interface{}, data []byte) error {
+func UnmarshalText(v interface{}, data []byte, useBase64 ...bool) error {
 	if rv, ok := v.(reflect.Value); ok {
 		if rv.Kind() != reflect.Ptr {
 			rv = rv.Addr()
@@ -130,8 +137,17 @@ func UnmarshalText(v interface{}, data []byte) error {
 
 	switch x := v.(type) {
 	case *[]byte:
-		d := make([]byte, len(data))
-		copy(d, data)
+		var d []byte
+		if len(useBase64) > 0 && useBase64[0] {
+			var err error
+			d, err = FromBase64(data)
+			if err != nil {
+				return err
+			}
+		} else {
+			d = make([]byte, len(data))
+			copy(d, data)
+		}
 		*x = d
 	case *string:
 		*x = string(data)
@@ -214,12 +230,12 @@ func UnmarshalText(v interface{}, data []byte) error {
 		}
 		*x = i
 	default:
-		return UnmarshalTextToReflectValue(reflect.ValueOf(x), data)
+		return UnmarshalTextToReflectValue(reflect.ValueOf(x), data, useBase64...)
 	}
 	return nil
 }
 
-func UnmarshalTextToReflectValue(rv reflect.Value, data []byte) error {
+func UnmarshalTextToReflectValue(rv reflect.Value, data []byte, useBase64 ...bool) error {
 	if rv.Kind() != reflect.Ptr {
 		return errors.Errorf("unmarshal text need ptr value, but got %#v", rv.Interface())
 	}
@@ -233,7 +249,16 @@ func UnmarshalTextToReflectValue(rv reflect.Value, data []byte) error {
 
 	switch rv.Kind() {
 	case reflect.Slice:
-		if rv.Type().Elem().Kind() == reflect.Uint8 {
+		elem := rv.Type().Elem()
+		if elem.Kind() == reflect.Uint8 && elem.PkgPath() == "" {
+			if len(useBase64) > 0 && useBase64[0] {
+				d, err := FromBase64(data)
+				if err != nil {
+					return err
+				}
+				rv.SetBytes(d)
+				return nil
+			}
 			rv.SetBytes(data)
 		}
 	case reflect.String:
@@ -272,4 +297,26 @@ func NewReflectValue(t reflect.Type) reflect.Value {
 		v.Set(NewReflectValue(t.Elem()).Addr())
 	}
 	return v
+}
+
+func ToBase64(raw []byte) []byte {
+	length := base64.StdEncoding.EncodedLen(len(raw))
+	if length <= 1024 {
+		d := make([]byte, length)
+		base64.StdEncoding.Encode(d, raw)
+		return d
+	}
+	b := bytes.NewBuffer(nil)
+	base64.NewDecoder(base64.StdEncoding, b)
+	return b.Bytes()
+}
+
+func FromBase64(data []byte) ([]byte, error) {
+	length := base64.StdEncoding.DecodedLen(len(data))
+	d := make([]byte, length)
+	n, err := base64.StdEncoding.Decode(d, data)
+	if err != nil {
+		return nil, err
+	}
+	return d[:n], nil
 }
