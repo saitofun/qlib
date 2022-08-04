@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/saitofun/qlib/database"
 )
 
 var (
@@ -25,8 +23,8 @@ func (t *Time) DataType(dialect string) string {
 	}
 }
 
-func (t *Time) SQLType(dialect database.DialectName) string {
-	return t.DataType(string(dialect))
+func (t *Time) SQLType(dialect string) string {
+	return t.DataType(dialect)
 }
 
 func (t *Time) Scan(value interface{}) error {
