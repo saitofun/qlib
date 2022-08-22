@@ -42,6 +42,10 @@ func LowerCamelCase(name string) string {
 // UpperCamelCase e.g. IAmA10YearsSenior
 func UpperCamelCase(name string) string {
 	return rewords(name, func(res, word string, idx int) string {
+		upper := strings.ToUpper(word)
+		if _, ok := initialisms[upper]; ok {
+			return res + upper
+		}
 		word = strings.ToLower(word)
 		runes := []rune(word)
 		runes[0] = unicode.ToUpper(runes[0])
